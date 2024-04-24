@@ -1,0 +1,33 @@
+{
+  "name": "mern-eshop",
+  "version": "1.0.0",
+  "description": "A simple react e-commerce app",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "start": "node backend/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MBEDOBE/mern-eshop.git"
+  },
+  "keywords": [
+    "react",
+    "ecommerce",
+    "mern-stack"
+  ],
+  "author": "Daniel Mbedobe K.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MBEDOBE/mern-eshop/issues"
+  },
+  "homepage": "https://github.com/MBEDOBE/mern-eshop#readme",
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "faker": "^6.6.6"
+  }
+}

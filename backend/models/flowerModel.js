@@ -1,0 +1,29 @@
+import mongoose from 'mongoose';
+
+
+const flowerSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true, unique: true },
+        slug: { type: String, required: true, unique: true },
+        image: { type: String, required: true },
+        images: [String],
+        color: { type: String, required: true},
+        size: { type: String, required: true},
+            description: { type: String, required: true},
+            price: { type: String, required: true},
+            countInStock: { type: Number, required: true },
+            rating: { type: Number, required: true },
+            numReviews: { type: Number, required: true },
+            reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
+    },
+);
+
+// const packageSchema = new mongoose.Schema({
+//         type: { type: String, required: true, unique: true },
+//         price: { type: Number, required: true },
+// });
+const Flower = mongoose.model('Flower', flowerSchema);
+// const Package = mongoose.model('Package', packageSchema);
+
+export { Flower };
+
