@@ -6,15 +6,16 @@ import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import Flower from '../components/Flower';
+import Packing from '../components/Packing';
 import Container from "react-bootstrap/Container";
 
-
+// Reducer function to manage component state
 const reducer = (state, action) => {
     switch (action.type) {
         case 'FETCH_REQUEST':
             return { ...state, loading: true };
         case 'FETCH_SUCCESS':
-            return { ...state, flowers: action.payload, loading: false };
+            return { ...state, packings: action.payload.packings, flowers: action.payload.flowers, loading: false };
         case 'FETCH_FAIL':
             return { ...state, loading: false, error: action.payload };
         default:
@@ -22,29 +23,42 @@ const reducer = (state, action) => {
     }
 };
 
-export default function BouquetsScreen() {
-    const [{ loading, error, flowers }, dispatch] = useReducer(reducer, {
+export default function CreateBouquetScreen() {
+    // Using useReducer hook to manage component state
+    const [{ loading, error, packings, flowers }, dispatch] = useReducer(reducer, {
+        packings: [],
         flowers: [],
         loading: true,
         error: '',
     });
-    //const [flowers, setFlowers] = useState([]);
+// Using useEffect hook to perform side effects like fetching data from server
     useEffect(() => {
         const fetchData = async () => {
             dispatch({ type: 'FETCH_REQUEST' });
             try {
-                const result = await axios.get('/api/flowers');
-                dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+                // Fetching flower data from server
+                const flowersResult = await axios.get('/api/flowers');
+                // Fetching packing data from server
+                const packingsResult = await axios.get('/api/packings');
+                // Merging fetched data
+                const mergedData = {
+                    packings: packingsResult.data,
+                    flowers: flowersResult.data,
+                };
+                // Dispatching action indicating successful data fetching along with fetched data
+                dispatch({ type: 'FETCH_SUCCESS', payload: mergedData });
             } catch (error) {
+                // Dispatching action indicating failed data fetching along with error message
                 dispatch({ type: 'FETCH_FAIL', payload: error.message });
             }
-            //setFlowers(result.data);
         };
+        // Calling the function to fetch data when the component mounts
         fetchData();
     }, []);
-    return (
 
-        <div >
+    // Returning JSX code to render the component
+    return (
+        <div>
             <img
                 src="/main.jpg"
                 className="Flowers"
@@ -52,20 +66,23 @@ export default function BouquetsScreen() {
             />
             <Container>
                 <Helmet>
-                    <title> Flower Boutique</title>
+                    <title> Flower & Packing Boutique</title>
                 </Helmet>
-                <div className="flowers">
-                    <h1>Flowers</h1>
+                <div className="items">
+                    <h1>Items</h1>
                     {loading ? (
-                        <LoadingBox/>
+                        <LoadingBox />
                     ) : error ? (
                         <MessageBox variant="danger">{error}</MessageBox>
                     ) : (
-
                         <Row>
+                            {packings.map((packing) => (
+                                <Col key={packing.slug} sm={6} md={4} lg={3} className="mb-3">
+                                    <Packing packing={packing}></Packing>
+                                </Col>
+                            ))}
                             {flowers.map((flower) => (
                                 <Col key={flower.slug} sm={6} md={4} lg={3} className="mb-3">
-                                    {/* <Flower flower={flower}></Flower> */}
                                     <Flower flower={flower}></Flower>
                                 </Col>
                             ))}

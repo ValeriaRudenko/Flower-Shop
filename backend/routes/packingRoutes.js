@@ -2,6 +2,8 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import  Packing  from '../models/packingModel.js';
+import Product from "../models/productModel.js";
+import productRouter from "./productRoutes.js";
 
 const packingRouter = express.Router();
 
@@ -18,7 +20,7 @@ packingRouter.post(
     isAdmin,
     expressAsyncHandler(async (req, res) => {
         const {
-            type,
+            name,
             price,
             slug,
             image,
@@ -29,7 +31,7 @@ packingRouter.post(
         } = req.body;
 
         const newPacking = new Packing({
-            type,
+            name,
             price,
             slug,
             image,
@@ -43,6 +45,42 @@ packingRouter.post(
         res.status(201).send({ message: 'Packing Created', packing: createdPacking });
     })
 );
+// Add a review to a packing
+packingRouter.post(
+    '/:id/reviews',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const packingId = req.params.id;
+        const packing = await Product.findById(packingId);
+        if (packing) {
+            if (packing.reviews.find((x) => x.name === req.user.name)) {
+                return res
+                    .status(400)
+                    .send({ message: 'You already submitted a review' });
+            }
+
+            const review = {
+                name: req.user.name,
+                rating: Number(req.body.rating),
+                comment: req.body.comment,
+            };
+            packing.reviews.push(review);
+            packing.numReviews = packing.reviews.length;
+            packing.rating =
+                packing.reviews.reduce((a, c) => c.rating + a, 0) /
+                packing.reviews.length;
+            const updatedProduct = await packing.save();
+            res.status(201).send({
+                message: 'Review Created',
+                review: updatedPacking.reviews[updatedPacking.reviews.length - 1],
+                numReviews: packing.numReviews,
+                rating: packing.rating,
+            });
+        } else {
+            res.status(404).send({ message: 'Packing Not Found' });
+        }
+    })
+);
 
 // Update a packing
 packingRouter.put(
@@ -54,7 +92,7 @@ packingRouter.put(
             const packingId = req.params.id;
             const packing = await Packing.findById(packingId);
             if (packing) {
-                packing.type = req.body.type || packing.type;
+                packing.name = req.body.typee || packing.name;
                 packing.price = req.body.price || packing.price;
                 packing.slug = req.body.slug || packing.slug;
                 packing.image = req.body.image || packing.image;

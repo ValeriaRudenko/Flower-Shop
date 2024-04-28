@@ -25,23 +25,31 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+// Get PayPal client ID
+// Отримати клієнтський ідентифікатор PayPal
 app.get("/api/keys/paypal", (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || "sb");
 });
-
+// Get Google API key
+// Отримати ключ Google API
 app.get("/api/keys/google", (req, res) => {
   res.send({ key: process.env.GOOGLE_API_KEY || "" });
 });
-
+// Routes for handling uploads
+// Маршрути для обробки завантажень
 app.use("/api/upload", uploadRouter);
+// Routes for seeding initial data
+// Маршрути для початкового заповнення даними
 app.use("/api/seed", seedRouter);
+// Routes for products
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/flowers", flowerRouter);
 app.use("/api/packings", packingRouter);
 
+// Error handler middleware
+// Middleware для обробки помилок
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });
 });
@@ -49,6 +57,8 @@ app.use((err, req, res, next) => {
 const _dirname = path.resolve();
 app.use(express.static(path.join(_dirname, "/frontend/build")));
 
+// Serve static files in production
+// Служити статичні файли в режимі продукції
 app.get("*", (req, res) => {
   res.sendFile(path.join(_dirname, "/frontend/build/index.html"));
 });

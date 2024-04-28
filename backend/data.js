@@ -92,7 +92,7 @@ flowers : [
 ],
   packings : [
     {
-      type: 'Wrapping paper',
+      name: 'Wrapping paper',
       price: 20,
       slug: 'wrapping-paper',
       countInStock: 100,
@@ -102,7 +102,7 @@ flowers : [
       image: '/images/p5.jpg',
     },
     {
-      type: 'Box',
+      name: 'Box',
       price: 20,
       slug: 'box',
       image: '/images/p5.jpg',

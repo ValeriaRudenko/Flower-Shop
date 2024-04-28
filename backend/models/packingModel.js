@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const packingSchema = new mongoose.Schema({
-    type: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true },
     price: { type: Number, required: true },
     slug: { type: String, required: true, unique: true },
     image: { type: String, required: true },

@@ -14,25 +14,40 @@ export default function Packing(props) {
     const {
         cart: { cartItems },
     } = state;
-
+console.log(packing.name)
+    // Function to handle adding a packing to the cart
+    // Функція для додавання упаковки до кошика
     const addToCartHandler = async (item) => {
+        // Check if the item already exists in the cart
+        // Перевіряємо, чи вже є товар у кошику
         const itemExist = cartItems.find((x) => x._id === packing._id);
+        // Determine the quantity of the item
+        // Визначаємо кількість товару
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
-        const { data } = await axios.get(`/api/packing/${item._id}`);
+        // Fetch the latest data of the packing from the server
+        // Отримуємо оновлені дані упаковки з сервера
+        const { data } = await axios.get(`/api/packings/${item._id}`);
         const type= 'packing'
+        // Check if the packing is still in stock
+        // Перевіряємо, чи упаковка все ще є в наявності
         if (data.countInStock < quantity) {
             window.alert('Sorry. Product is out of stock');
             return;
         }
+        // Dispatch an action to add the packing to the cart
+        // Відправляємо дію для додавання упаковки до кошика
         ctxDispatch({
             type: 'CART_ADD_ITEM',
             payload: { ...packing, quantity, type },
         });
     };
 
+
+    // Render the packing card component
+    // Відображення компонента карточки упаковки
     return (
         <Card>
-            <Link to={`/packing/${packing.slug}`}>
+            <Link to={`/packings/${packing.slug}`}>
                 <img src={packing.image} className="card-img-top"  alt={packing.name} />
             </Link>
             <Card.Body>

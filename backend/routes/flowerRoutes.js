@@ -8,12 +8,14 @@ import {Flower} from "../models/flowerModel.js";
 const flowerRouter = express.Router();
 
 // Fetch all flowers
+// Отримати всі квіти
 flowerRouter.get('/', async (req, res) => {
     const flowers = await Flower.find();
     res.send(flowers);
 });
 
 // Create a new flower
+// Створити новий квіт
 flowerRouter.post(
     '/',
     isAuth,
@@ -53,6 +55,7 @@ flowerRouter.post(
 );
 
 // Update a flower
+// Оновити дані квіту
 flowerRouter.put(
     '/:id',
     isAuth,
@@ -96,6 +99,8 @@ flowerRouter.delete(
         }
     })
 );
+// Fetch a flower by slug
+// Отримати квіт за унікальним ідентифікатором (slug)
 flowerRouter.get('/slug/:slug', async (req, res) => {
     const flower = await Flower.findOne({ slug: req.params.slug });
     if (flower) {
@@ -104,6 +109,8 @@ flowerRouter.get('/slug/:slug', async (req, res) => {
         res.status(404).send({ message: 'Flower Not Found' });
     }
 });
+// Fetch a flower by ID
+// Отримати квіт за ідентифікатором
 flowerRouter.get('/:id', async (req, res) => {
     const flower = await Flower.findById(req.params.id);
     if (flower) {

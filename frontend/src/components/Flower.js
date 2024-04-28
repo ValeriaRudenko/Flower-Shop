@@ -14,21 +14,35 @@ export default function Flower(props) {
         cart: { cartItems },
     } = state;
 
+    // Function to handle adding a flower to the cart
+    // Функція для додавання квітки до кошика
     const addToCartHandler = async (item) => {
+        // Check if the item already exists in the cart
+        // Перевіряємо, чи вже є товар у кошику
         const itemExist = cartItems.find((x) => x._id === flower._id);
+        // Determine the quantity of the item
+        // Визначаємо кількість товару
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
+        // Fetch the latest data of the flower from the server
+        // Отримуємо оновлені дані квітки з сервера
         const { data } = await axios.get(`/api/flowers/${item._id}`);
-        // const type= 'flower'
+        const type= 'flower'
+        // Check if the flower is still in stock
+        // Перевіряємо, чи квітка все ще є в наявності
         if (data.countInStock < quantity) {
             window.alert('Sorry. Product is out of stock');
             return;
         }
+        // Dispatch an action to add the flower to the cart
+        // Відправляємо дію для додавання квітки до кошика
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: { ...flower, quantity },
+            payload: { ...flower, quantity, type },
         });
     };
-
+console.log(flower.name)
+    // Render the flower card component
+    // Відображення компонента карточки квітки
     return (
         <Card>
             <Link to={`/flower/${flower.slug}`}>
@@ -40,11 +54,15 @@ export default function Flower(props) {
                 </Link>
                 <Rating rating={flower.rating} numReviews={flower.numReviews} />
                 <Card.Text>
+                    {/* Render the price component */}
+                    {/* Відображення компонента ціни */}
                     <ProductPrice
                         price={flower.price}
                     ></ProductPrice>
                 </Card.Text>
                 <div className="d-grid gap-2">
+                    {/* Render the button based on the availability of the flower */}
+                    {/* Відображення кнопки залежно від доступності квітки */}
                     {flower.countInStock === 0 ? (
                         <Button variant="light" disabled>
                             Out of stock

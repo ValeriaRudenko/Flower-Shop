@@ -36,19 +36,29 @@ import UserEditScreen from "./screens/UserEditScreen";
 import MapScreen from "./screens/MapScreen";
 import BouquetsScreen from "./screens/BouquetsScreen";
 import CreateBouquetScreen from "./screens/CreateBouquetScreen";
+import FlowerScreen from "./screens/FlowerScreen";
+import PackingScreen from "./screens/PackingScreen";
 
 function App() {
+    // Accessing global state and dispatch function from Store context
   const {state, dispatch: ctxDispatch} = useContext(Store);
-  const {fullBox, cart, userInfo} = state;
+    // Destructuring state variables
+    const {fullBox, cart, userInfo} = state;
 
+    // Function to handle user signout
   const signoutHandler = () => {
+      // Dispatching user signout action
     ctxDispatch({type: "USER_SIGNOUT"});
+      // Removing user info from localStorage
     localStorage.removeItem("userInfo");
+      // Removing shipping address from localStorage
     localStorage.removeItem("shippingAddress");
+    // Removing payment method from localStorage
     localStorage.removeItem("paymentMethod");
+      // Redirecting to signin page
     window.location.href = "/signin";
   };
-
+  // State variable and effect to fetch categories
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -58,12 +68,13 @@ function App() {
         const {data} = await axios.get(`/api/products/categories`);
         setCategories(data);
       } catch (error) {
+          // Displaying error message if category fetch fails
         toast.error(getError(error));
       }
     };
     fetchCategories();
   }, []);
-
+// Rendering the app with routing and components
   return (
       <BrowserRouter>
         <div
@@ -153,6 +164,8 @@ function App() {
             <div className="mt-3">
               <Routes>
                 <Route path="/product/:slug" element={<ProductScreen/>}/>
+                  <Route path="/flower/:slug" element={<FlowerScreen/>}/>
+                  <Route path="/packing/:slug" element={<PackingScreen/>}/>
                 <Route path="/cart" element={<CartScreen/>}/>
                 <Route path="/signin" element={<SigninScreen/>}/>
                 <Route path="/signup" element={<SignupScreen/>}/>
