@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,6 +8,7 @@ import MessageBox from '../components/MessageBox';
 import Flower from '../components/Flower';
 import Packing from '../components/Packing';
 import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
 
 // Reducer function to manage component state
 const reducer = (state, action) => {
@@ -31,7 +32,13 @@ export default function CreateBouquetScreen() {
         loading: true,
         error: '',
     });
-// Using useEffect hook to perform side effects like fetching data from server
+    // State to manage the selected category (flowers, packings, or all)
+    const [selectedCategory, setSelectedCategory] = useState('flowers');
+    // State variables for pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(1); // Changed to display only 2 items per page
+
+    // Using useEffect hook to perform side effects like fetching data from server
     useEffect(() => {
         const fetchData = async () => {
             dispatch({ type: 'FETCH_REQUEST' });
@@ -56,6 +63,39 @@ export default function CreateBouquetScreen() {
         fetchData();
     }, []);
 
+    // Function to filter items based on selected category
+    // const filteredItems = () => {
+    //     let filtered = [];
+    //     if (selectedCategory === 'flowers') {
+    //         filtered = flowers;
+    //     } else if (selectedCategory === 'packings') {
+    //         filtered = packings;
+    //     } else {
+    //         filtered = [...flowers, ...packings];
+    //     }
+    //     return filtered;
+    // };
+
+    const filteredItems = () => {
+        let filtered = [];
+        if (selectedCategory === 'packings') {
+            filtered = packings;
+        } else {
+            filtered = flowers;
+        }
+        return filtered;
+    };
+
+    // Function to handle next page
+    const nextPage = () => {
+        setCurrentPage((prevPage) => prevPage + 1);
+    };
+
+    // Function to handle previous page
+    const prevPage = () => {
+        setCurrentPage((prevPage) => prevPage - 1);
+    };
+
     // Returning JSX code to render the component
     return (
         <div>
@@ -70,23 +110,73 @@ export default function CreateBouquetScreen() {
                 </Helmet>
                 <div className="items">
                     <h1>Items</h1>
+                    <Container>
+                        <Row>
+                            <Col xs={12} md={6}>
+                                <div>
+                                    {/*<Button variant="link" onClick={() => setSelectedCategory('all')} style={{ textDecoration: 'none', color: ' #114232' }}>*/}
+                                    {/*    All*/}
+                                    {/*</Button>{' '}*/}
+                                    <Button variant="link" onClick={() => setSelectedCategory('flowers')} style={{ textDecoration: 'none', color: ' #114232' }}>
+                                        Flowers
+                                    </Button>{' '}
+                                    <Button variant="link" onClick={() => setSelectedCategory('packings')} style={{ textDecoration: 'none', color: ' #114232' }}>
+                                        Packings
+                                    </Button>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Container>
+
+
                     {loading ? (
                         <LoadingBox />
                     ) : error ? (
                         <MessageBox variant="danger">{error}</MessageBox>
                     ) : (
-                        <Row>
-                            {packings.map((packing) => (
-                                <Col key={packing.slug} sm={6} md={4} lg={3} className="mb-3">
-                                    <Packing packing={packing}></Packing>
-                                </Col>
-                            ))}
-                            {flowers.map((flower) => (
-                                <Col key={flower.slug} sm={6} md={4} lg={3} className="mb-3">
-                                    <Flower flower={flower}></Flower>
-                                </Col>
-                            ))}
-                        </Row>
+                        <div>
+                            <Row>
+                                {filteredItems().slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => (
+                                    <Col key={item.slug} sm={6} className="mb-3">
+                                        {selectedCategory === 'flowers' ? (
+                                            <Flower flower={item} />
+                                        ) : (
+                                            <Packing packing={item} />
+                                        )}
+                                    </Col>
+                                ))}
+                            </Row>
+                            {/* Pagination */}
+                            <div className="pagination">
+                                {filteredItems().length > itemsPerPage && (
+                                    <div className="pagination-list">
+                                        <div className="page-item">
+                                            <Button variant="link" onClick={prevPage} disabled={currentPage === 1} className="page-link">
+                                                Previous
+                                            </Button>
+                                        </div>
+                                        {Array.from({ length: Math.ceil(filteredItems().length / itemsPerPage) }, (_, i) => {
+                                            if (i + 1 >= currentPage - 2 && i + 1 <= currentPage + 2) {
+                                                return (
+                                                    <div key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                                        <Button variant="link" onClick={() => setCurrentPage(i + 1)} className="page-link">
+                                                            {i + 1}
+                                                        </Button>
+                                                    </div>
+                                                );
+                                            }
+                                        })}
+                                        <div className="page-item">
+                                            <Button variant="link" onClick={nextPage} disabled={currentPage === Math.ceil(filteredItems().length / itemsPerPage)} className="page-link">
+                                                Next
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+
+                        </div>
                     )}
                 </div>
             </Container>

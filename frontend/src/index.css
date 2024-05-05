@@ -175,4 +175,39 @@ button.thumbnail {
 .cardTitle-price {
   color: #114232;
 }
+.pagination {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+}
 
+.pagination-list {
+  display: flex;
+  justify-content: center;
+}
+
+.page-item {
+  margin: 0 10px;
+}
+
+.page-link {
+  color: #114232;
+}
+
+.page-link:hover {
+  color: #114232;
+}
+
+.page-item.disabled.page-link {
+  color: #114232;
+}
+
+.page-item .active {
+  color: #114232;
+}
+
+
+.pagination .page-link {
+  color:  #114232; /* Text color */
+  background-color:  white; /* Button background color */
+}

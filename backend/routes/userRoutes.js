@@ -6,8 +6,29 @@ import { generateToken, isAuth, isAdmin } from '../utils.js';
 
 const userRouter = express.Router();
 
+// Validator middleware function
+const validateUserData = (req, res, next) => {
+    const { name, email, password } = req.body;
+    const errors = [];
+
+    if (name!==undefined && (name.length < 6 || name.length > 256)) {
+        return res.status(400).json({message:'Name must be between 6 and 256 characters.'});
+    }
+
+    if (email.length < 6 || email.length > 256) {
+        return res.status(400).json({message:'Email must be between 6 and 256 characters.'});
+    }
+
+    if (password.length < 6 || password.length > 256) {
+        return res.status(400).json({ message:'Password must be between 6 and 256 characters.'});
+    }
+
+
+    next(); // Proceed to the next middleware
+};
 userRouter.post(
   '/signin',
+    validateUserData, // Adding validator middleware
   expressAsyncHandler(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user) {
@@ -84,23 +105,35 @@ userRouter.put(
 );
 
 userRouter.post(
-  '/signup',
-  expressAsyncHandler(async (req, res) => {
-    const newUser = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password),
-    });
-    const user = await newUser.save();
-    res.send({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      token: generateToken(user),
-    });
-  })
+    '/signup',
+    validateUserData,
+    expressAsyncHandler(async (req, res) => {
+        const { name, email, password } = req.body;
+
+        // Check if a user with this email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User with this email already exists' });
+        }
+
+        // Create a new user
+        const newUser = new User({
+            name,
+            email,
+            password: bcrypt.hashSync(password),
+        });
+        const user = await newUser.save();
+
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user),
+        });
+    })
 );
+
 
 userRouter.put(
     '/profile',
