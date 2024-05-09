@@ -15,7 +15,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShippingAddressScreen from "./screens/ShippingAddressScreen";
 import SignupScreen from "./screens/SignupScreen";
-import PaymentMethodScreen from "./screens/PaymentMethodScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
 import OrderHistoryScreen from "./screens/OrderHistoryScreen";
@@ -33,7 +32,6 @@ import ProductEditScreen from "./screens/ProductEditScreen";
 import OrderListScreen from "./screens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
-import MapScreen from "./screens/MapScreen";
 import BouquetsScreen from "./screens/BouquetsScreen";
 import CreateBouquetScreen from "./screens/CreateBouquetScreen";
 import FlowerScreen from "./screens/FlowerScreen";
@@ -94,7 +92,7 @@ function App() {
                     variant="dark" expand="lg">
               <Container>
 
-                <LinkContainer to="/">
+                <LinkContainer to="/bouquets">
                   <Navbar.Brand>FlowerShop</Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
@@ -180,7 +178,6 @@ function App() {
                     }
                 />
                 <Route path="/shipping" element={<ShippingAddressScreen/>}/>
-                <Route path="/payment" element={<PaymentMethodScreen/>}></Route>
                 <Route path="/placeorder" element={<PlaceOrderScreen/>}/>
                 <Route
                     path="/order/:id"
@@ -247,15 +244,7 @@ function App() {
                       </AdminRoute>
                     }
                 ></Route>
-                <Route
-                    path="/map"
-                    element={
-                      <ProtectedRoute>
-                        <MapScreen/>
-                      </ProtectedRoute>
-                    }
-                />
-                <Route path="/" element={<HomeScreen/>}/>
+                <Route path="/" element={<BouquetsScreen/>}/>
               </Routes>
             </div>
           </main>

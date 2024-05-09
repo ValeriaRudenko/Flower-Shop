@@ -1,83 +1,70 @@
 import { createContext, useReducer } from 'react';
 
+// Create a context for the global state management.
 export const Store = createContext();
 
+// Define the initial state of the application.
 const initialState = {
-  fullBox: false,
-  userInfo: localStorage.getItem('userInfo')
-    ? JSON.parse(localStorage.getItem('userInfo'))
-    : null,
+  fullBox: false, // Indicates whether the fullBox is enabled or not.
+  userInfo: localStorage.getItem('userInfo') // Get user info from local storage or set to null if not found.
+      ? JSON.parse(localStorage.getItem('userInfo'))
+      : null,
 
+  // Define the shopping cart state with initial values fetched from local storage or default values.
   cart: {
     shippingAddress: localStorage.getItem('shippingAddress')
-      ? JSON.parse(localStorage.getItem('shippingAddress'))
-      : { location: {} },
-    paymentMethod: localStorage.getItem('paymentMethod')
-      ? localStorage.getItem('paymentMethod')
-      : '',
+        ? JSON.parse(localStorage.getItem('shippingAddress'))
+        : { location: {} }, // Default shipping address is an empty object with a location property.
+    paymentMethod: localStorage.getItem('paymentMethod') || '', // Default payment method is an empty string.
     cartItems: localStorage.getItem('cartItems')
-      ? JSON.parse(localStorage.getItem('cartItems'))
-      : [],
+        ? JSON.parse(localStorage.getItem('cartItems'))
+        : [], // Default cart items is an empty array.
   },
 };
-// This function takes the current state and an action as parameters.
+
+// Reducer function to handle state updates based on dispatched actions.
 function reducer(state, action) {
-  // It checks the type of action.
   switch (action.type) {
-      // If the action type is 'SET_FULLBOX_ON',
+      // Set fullBox to true.
     case 'SET_FULLBOX_ON':
-      // it returns a new state with 'fullBox' set to true.
       return { ...state, fullBox: true };
-// If the action type is 'SET_FULLBOX_OFF',
-      case 'SET_FULLBOX_OFF':
-        // it returns a new state with 'fullBox' set to false.
-        return { ...state, fullBox: false };
-// If the action type is 'CART_ADD_ITEM',
-      // it adds an item to the shopping cart.
+      // Set fullBox to false.
+    case 'SET_FULLBOX_OFF':
+      return { ...state, fullBox: false };
+      // Add an item to the cart.
     case 'CART_ADD_ITEM':
-      // It extracts the new item from the action payload.
       const newItem = action.payload;
-      // It checks if the new item already exists in the cart.
       const itemExist = state.cart.cartItems.find(
-        (item) => item._id === newItem._id
+          (item) => item._id === newItem._id
       );
-      // It updates the cart items: either updates the quantity of an existing item or adds a new item.
       const cartItems = itemExist
-        ? state.cart.cartItems.map((item) =>
-            item._id === itemExist._id ? newItem : item
+          ? state.cart.cartItems.map((item) =>
+              item._id === itemExist._id ? newItem : item
           )
-        : [...state.cart.cartItems, newItem];
-      // It saves the updated cart items to the browser's localStorage.
+          : [...state.cart.cartItems, newItem];
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
-      // It returns a new state with the updated cart items.
       return { ...state, cart: { ...state.cart, cartItems } };
-      // If the action type is 'CART_REMOVE_ITEM',
-      // it removes an item from the shopping cart.
-    case 'CART_REMOVE_ITEM': {
-      // It filters out the item to be removed from the cart items array.
-      const cartItems = state.cart.cartItems.filter(
-        (item) => item._id !== action.payload._id
+      // Remove an item from the cart.
+    case 'CART_REMOVE_ITEM':
+      const cartItemsRemoved = state.cart.cartItems.filter(
+          (item) => item._id !== action.payload._id
       );
-      // It saves the updated cart items to the browser's localStorage.
-      localStorage.setItem('cartItems', JSON.stringify(cartItems));
-      // It returns a new state with the updated cart items.
-      return { ...state, cart: { ...state.cart, cartItems } };
-    }
-      // If the action type is 'CART_CLEAR',
-      // it clears all items from the shopping cart.
+      localStorage.setItem('cartItems', JSON.stringify(cartItemsRemoved));
+      return { ...state, cart: { ...state.cart, cartItems: cartItemsRemoved } };
+      // Clear the cart.
     case 'CART_CLEAR':
-      // It returns a new state with an empty cart items array.
+      localStorage.removeItem('cartItems');
       return { ...state, cart: { ...state.cart, cartItems: [] } };
-// If the action type is 'USER_SIGNIN',
-      // it updates the user information upon signing in.
+      // Update user info upon sign-in.
     case 'USER_SIGNIN':
-      // It returns a new state with the updated user information.
       return { ...state, userInfo: action.payload };
-// If the action type is 'USER_SIGNOUT',
-      // it clears the user information and empties the cart upon signing out.
+      // Clear user info and cart upon sign-out.
     case 'USER_SIGNOUT':
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('cartItems');
+      localStorage.removeItem('shippingAddress');
+      localStorage.removeItem('paymentMethod');
       return {
-        // It returns a new state with cleared user information and an empty cart.
         ...state,
         userInfo: null,
         cart: {
@@ -86,15 +73,13 @@ function reducer(state, action) {
           paymentMethod: '',
         },
       };
-
+      // Save shipping address to the cart.
     case 'SAVE_SHIPPING_ADDRESS':
       return {
         ...state,
-        cart: {
-          ...state.cart,
-          shippingAddress: action.payload,
-        },
+        cart: { ...state.cart, shippingAddress: action.payload },
       };
+      // Save shipping address map location to the cart.
     case 'SAVE_SHIPPING_ADDRESS_MAP_LOCATION':
       return {
         ...state,
@@ -106,17 +91,18 @@ function reducer(state, action) {
           },
         },
       };
-
+      // Save payment method to the cart.
     case 'SAVE_PAYMENT_METHOD':
       return {
         ...state,
         cart: { ...state.cart, paymentMethod: action.payload },
       };
-
     default:
       return state;
   }
 }
+
+// Provider component to provide the store state and dispatch function to child components.
 export function StoreProvider(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const value = { state, dispatch };

@@ -1,43 +1,48 @@
-import React, { useContext, useEffect, useReducer } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Store } from '../Store';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import ListGroup from 'react-bootstrap/ListGroup';
-import CheckoutSteps from '../components/CheckoutSteps';
-import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { getError } from './utils';
-import LoadingBox from '../components/LoadingBox';
-import Axios from 'axios';
-import ProductPrice from "../components/Price";
+import React, { useContext, useEffect, useReducer } from 'react'; // Import React and necessary hooks
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
+import { Store } from '../Store'; // Import Store context
+import Row from 'react-bootstrap/Row'; // Import Row component from react-bootstrap
+import Col from 'react-bootstrap/Col'; // Import Col component from react-bootstrap
+import Card from 'react-bootstrap/Card'; // Import Card component from react-bootstrap
+import Button from 'react-bootstrap/Button'; // Import Button component from react-bootstrap
+import ListGroup from 'react-bootstrap/ListGroup'; // Import ListGroup component from react-bootstrap
+import CheckoutSteps from '../components/CheckoutSteps'; // Import custom CheckoutSteps component
+import { Helmet } from 'react-helmet-async'; // Import Helmet component from react-helmet-async
+import { Link } from 'react-router-dom'; // Import Link component from react-router-dom
+import { toast } from 'react-toastify'; // Import toast notification from react-toastify
+import { getError } from './utils'; // Import custom utility function getError
+import LoadingBox from '../components/LoadingBox'; // Import custom LoadingBox component
+import Axios from 'axios'; // Import Axios for HTTP requests
+import ProductPrice from "../components/Price"; // Import custom ProductPrice component
 
+// Define reducer function to manage loading state
 const reducer = (state, action) => {
   switch (action.type) {
     case 'CREATE_REQUEST':
-      return { ...state, loading: true };
+      return { ...state, loading: true }; // Set loading to true on request
     case 'CREATE_SUCCESS':
-      return { ...state, loading: false };
+      return { ...state, loading: false }; // Set loading to false on success
     case 'CREATE_FAIL':
-      return { ...state, loading: false };
+      return { ...state, loading: false }; // Set loading to false on failure
     default:
-      return state;
+      return state; // Return current state by default
   }
 };
 
+// Define PlaceOrderScreen component
 export default function PlaceOrderScreen() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize navigate function for routing
   const [{ loading }, dispatch] = useReducer(reducer, {
-    loading: false,
+    loading: false, // Initialize loading state using useReducer hook
   });
 
-  const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { cart, userInfo } = state;
+  const { state, dispatch: ctxDispatch } = useContext(Store); // Access global state and dispatch function from Store context
+  const { cart, userInfo } = state; // Destructure cart and userInfo from global state
 
-  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.2345 => 123.23
+  // Function to round a number to two decimal places
+  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100;
+
+  // Calculate prices for items, shipping, tax, and total
   cart.itemsPrice = round2(
       cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 0)
   );
@@ -45,16 +50,18 @@ export default function PlaceOrderScreen() {
   cart.taxPrice = round2(0.0 * cart.itemsPrice);
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
 
+  // Function to handle placing an order
   const placeOrderHandler = async () => {
     try {
-      dispatch({ type: 'CREATE_REQUEST' });
+      dispatch({ type: 'CREATE_REQUEST' }); // Dispatch action to set loading state
 
+      // Send POST request to create order
       const { data } = await Axios.post(
           '/api/orders',
           {
             orderItems: cart.cartItems,
             shippingAddress: cart.shippingAddress,
-            paymentMethod: cart.paymentMethod,
+            paymentMethod: 'PayPal', // Set payment method to PayPal
             itemsPrice: cart.itemsPrice,
             shippingPrice: cart.shippingPrice,
             taxPrice: cart.taxPrice,
@@ -66,23 +73,24 @@ export default function PlaceOrderScreen() {
             },
           }
       );
-      ctxDispatch({ type: 'CART_CLEAR' });
-      dispatch({ type: 'CREATE_SUCCESS' });
-      localStorage.removeItem('cartItems');
-      navigate(`/order/${data.order._id}`);
+      ctxDispatch({ type: 'CART_CLEAR' }); // Clear cart in global state
+      dispatch({ type: 'CREATE_SUCCESS' }); // Dispatch action to indicate success
+      localStorage.removeItem('cartItems'); // Remove cart items from local storage
+      navigate(`/order/${data.order._id}`); // Navigate to order confirmation page
     } catch (err) {
-      dispatch({ type: 'CREATE_FAIL' });
-      toast.error(getError(err));
+      dispatch({ type: 'CREATE_FAIL' }); // Dispatch action to indicate failure
+      toast.error(getError(err)); // Show error message using toast notification
     }
   };
 
+  // Effect hook to navigate to placeorder page if payment method is not set
   useEffect(() => {
     if (!cart.paymentMethod) {
-      navigate('/payment');
+      navigate('/placeorder');
     }
   }, [cart, navigate]);
 
-  // Group cart items by bouquetId
+  // Group cart items by ID or bouquet ID
   const groupedCartItems = cart.cartItems.reduce((acc, item) => {
     if (item.type === 'product') {
       acc[item._id] = [item];
@@ -95,9 +103,10 @@ export default function PlaceOrderScreen() {
     return acc;
   }, {});
 
+  // Return JSX representing the component
   return (
       <div>
-        <CheckoutSteps step1 step2 step3 step4></CheckoutSteps>
+        <CheckoutSteps step1 step2 step3 step4 /> {/* Display checkout steps */}
         <Helmet>
           <title>Preview Order</title>
         </Helmet>
@@ -113,21 +122,9 @@ export default function PlaceOrderScreen() {
                   {cart.shippingAddress.city},
                 </Card.Text>
                 <Link to="/shipping">
-                  <Button  variant="outline-primary"
-                           type="button">Edit</Button>
-                </Link>
-              </Card.Body>
-            </Card>
-
-            <Card className="mb-3">
-              <Card.Body>
-                <Card.Title>Payment</Card.Title>
-                <Card.Text>
-                  <strong>Method:</strong> {cart.paymentMethod}
-                </Card.Text>
-                <Link to="/payment">
-                  <Button variant="outline-primary"
-                          type="button">Change</Button>
+                  <Button variant="outline-primary" type="button">
+                    Edit
+                  </Button>
                 </Link>
               </Card.Body>
             </Card>
@@ -136,9 +133,11 @@ export default function PlaceOrderScreen() {
               <Card.Body>
                 <Card.Title>Items</Card.Title>
                 <ListGroup variant="flush">
+                  {/* Iterate over grouped cart items and display */}
                   {Object.keys(groupedCartItems).map((groupId, index) => (
                       <ListGroup.Item key={groupId}>
                         <Row className="align-items-center">
+                          {/* Check item type and display accordingly */}
                           {groupedCartItems[groupId][0].type === 'product' ? (
                               <>
                                 <Col md={6}>
@@ -147,22 +146,28 @@ export default function PlaceOrderScreen() {
                                       alt={groupedCartItems[groupId][0].name}
                                       className="img-fluid rounded img-thumbnail"
                                   ></img>{' '}
-                                  <Link to={`/product/${groupedCartItems[groupId][0].slug}`}>{groupedCartItems[groupId][0].name}</Link>
+                                  <Link
+                                      to={`/product/${groupedCartItems[groupId][0].slug}`}
+                                  >
+                                    {groupedCartItems[groupId][0].name}
+                                  </Link>
                                 </Col>
                                 <Col md={3}>
-                                  <span>{groupedCartItems[groupId][0].quantity}</span>
+                            <span>
+                              {groupedCartItems[groupId][0].quantity}
+                            </span>
                                 </Col>
                                 <Col md={3}>
                                   <ProductPrice
                                       price={groupedCartItems[groupId][0].price}
                                   ></ProductPrice>
-                                  {/*<strong>  {item.price} </strong>*/}
                                 </Col>
                               </>
                           ) : (
                               <Col>
                                 <h5>Custom Bouquet {index + 1}</h5>
                                 <ul>
+                                  {/* Iterate over items in bouquet and display */}
                                   {groupedCartItems[groupId].map((item) => (
                                       <li key={item._id}>
                                         <img
@@ -170,23 +175,31 @@ export default function PlaceOrderScreen() {
                                             alt={item.name}
                                             className="img-fluid rounded img-thumbnail"
                                         />
-                                        {item.name} - {item.quantity}
-                                        {' '}
+                                        {item.name} - {item.quantity}{' '}
                                         <ProductPrice price={item.price}></ProductPrice>
-                                        {' '}
                                       </li>
                                   ))}
                                 </ul>
-                                <h6>Total Price: <ProductPrice price={groupedCartItems[groupId]
-                                    .reduce((a, c) => a + c.price * c.quantity, 0)} /></h6>
+                                <h6>
+                                  Total Price:{' '}
+                                  <ProductPrice
+                                      price={groupedCartItems[groupId].reduce(
+                                          (a, c) => a + c.price * c.quantity,
+                                          0
+                                      )}
+                                  />
+                                </h6>
                               </Col>
                           )}
                         </Row>
                       </ListGroup.Item>
                   ))}
                 </ListGroup>
-                <Link to="/cart"><Button  variant="outline-primary"
-                                          type="button">Edit</Button></Link>
+                <Link to="/cart">
+                  <Button variant="outline-primary" type="button">
+                    Edit
+                  </Button>
+                </Link>
               </Card.Body>
             </Card>
           </Col>
@@ -225,6 +238,7 @@ export default function PlaceOrderScreen() {
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <div className="d-grid">
+                      {/* Button to place order */}
                       <Button
                           variant="outline-primary"
                           type="button"
@@ -234,6 +248,7 @@ export default function PlaceOrderScreen() {
                         Place Order
                       </Button>
                     </div>
+                    {/* Display loading spinner if loading */}
                     {loading && <LoadingBox></LoadingBox>}
                   </ListGroup.Item>
                 </ListGroup>

@@ -63,18 +63,6 @@ export default function CreateBouquetScreen() {
         fetchData();
     }, []);
 
-    // Function to filter items based on selected category
-    // const filteredItems = () => {
-    //     let filtered = [];
-    //     if (selectedCategory === 'flowers') {
-    //         filtered = flowers;
-    //     } else if (selectedCategory === 'packings') {
-    //         filtered = packings;
-    //     } else {
-    //         filtered = [...flowers, ...packings];
-    //     }
-    //     return filtered;
-    // };
 
     const filteredItems = () => {
         let filtered = [];
@@ -114,9 +102,6 @@ export default function CreateBouquetScreen() {
                         <Row>
                             <Col xs={12} md={6}>
                                 <div>
-                                    {/*<Button variant="link" onClick={() => setSelectedCategory('all')} style={{ textDecoration: 'none', color: ' #114232' }}>*/}
-                                    {/*    All*/}
-                                    {/*</Button>{' '}*/}
                                     <Button variant="link" onClick={() => setSelectedCategory('flowers')} style={{ textDecoration: 'none', color: ' #114232' }}>
                                         Flowers
                                     </Button>{' '}

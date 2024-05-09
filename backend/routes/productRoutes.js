@@ -235,3 +235,4 @@ productRouter.get('/:id', async (req, res) => {
 });
 
 export default productRouter;
+

@@ -30,11 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/api/keys/paypal", (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID || "AUqN6CU9Fb7d-Cr5lZplqXPFwCE_xCJFQmPiThF4T995zOZmmMCTAaQ1RwqHnT1USeKg4Hss89QTBzOE");
 });
-// Get Google API key
-// Отримати ключ Google API
-app.get("/api/keys/google", (req, res) => {
-  res.send({ key: process.env.GOOGLE_API_KEY || "" });
-});
+
 // Routes for handling uploads
 // Маршрути для обробки завантажень
 app.use("/api/upload", uploadRouter);
