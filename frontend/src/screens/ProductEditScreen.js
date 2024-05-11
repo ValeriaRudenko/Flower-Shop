@@ -58,7 +58,6 @@ export default function ProductEditScreen() {
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
   const [images, setImages] = useState([]);
-  const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
@@ -73,7 +72,6 @@ export default function ProductEditScreen() {
         setPrice(data.price);
         setImage(data.image);
         setImages(data.images);
-        setCategory(data.category);
         setCountInStock(data.countInStock);
         setBrand(data.brand);
         setDescription(data.description);
@@ -101,7 +99,6 @@ export default function ProductEditScreen() {
           price,
           image,
           images,
-          category,
           brand,
           countInStock,
           description,
@@ -226,15 +223,6 @@ export default function ProductEditScreen() {
               onChange={(e) => uploadFileHandler(e, true)}
             />
             {loadingUpload && <LoadingBox></LoadingBox>}
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="category">
-            <Form.Label>Category</Form.Label>
-            <Form.Control
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-            />
           </Form.Group>
           <Form.Group className="mb-3" controlId="brand">
             <Form.Label>Brand</Form.Label>

@@ -137,7 +137,6 @@ productRouter.get(
     const { query } = req;
     const pageSize = query.pageSize || PAGE_SIZE;
     const page = query.page || 1;
-    const category = query.category || '';
     const price = query.price || '';
     const rating = query.rating || '';
     const order = query.order || '';
@@ -152,7 +151,6 @@ productRouter.get(
             },
           }
         : {};
-    const categoryFilter = category && category !== 'all' ? { category } : {};
     const ratingFilter =
       rating && rating !== 'all'
         ? {
@@ -186,7 +184,6 @@ productRouter.get(
 
     const products = await Product.find({
       ...queryFilter,
-      ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
     })
@@ -196,7 +193,6 @@ productRouter.get(
 
     const countProducts = await Product.countDocuments({
       ...queryFilter,
-      ...categoryFilter,
       ...priceFilter,
       ...ratingFilter,
     });
@@ -206,14 +202,6 @@ productRouter.get(
       page,
       pages: Math.ceil(countProducts / pageSize),
     });
-  })
-);
-
-productRouter.get(
-  '/categories',
-  expressAsyncHandler(async (req, res) => {
-    const categories = await Product.find().distinct('category');
-    res.send(categories);
   })
 );
 

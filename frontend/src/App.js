@@ -56,22 +56,9 @@ function App() {
       // Redirecting to signin page
     window.location.href = "/signin";
   };
-  // State variable and effect to fetch categories
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const {data} = await axios.get(`/api/products/categories`);
-        setCategories(data);
-      } catch (error) {
-          // Displaying error message if category fetch fails
-        toast.error(getError(error));
-      }
-    };
-    fetchCategories();
-  }, []);
+
 // Rendering the app with routing and components
   return (
       <BrowserRouter>

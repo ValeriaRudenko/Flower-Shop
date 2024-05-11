@@ -100,15 +100,8 @@ orderRouter.get(
             },
             { $sort: { _id: 1 } }, // Sorting results by date
         ]);
-        const productCategories = await Product.aggregate([ // Aggregating product category data
-            {
-                $group: { // Grouping products
-                    _id: '$category', // Grouping by category
-                    count: { $sum: 1 }, // Counting total products in each category
-                },
-            },
-        ]);
-        res.send({ users, orders, dailyOrders, productCategories }); // Sending summary data as response
+
+        res.send({ users, orders, dailyOrders }); // Sending summary data as response
     })
 );
 

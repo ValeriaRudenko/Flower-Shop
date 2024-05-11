@@ -127,7 +127,6 @@ flowerRouter.get(
         const { query } = req;
         const pageSize = query.pageSize || PAGE_SIZE;
         const page = query.page || 1;
-        const category = query.category || '';
         const price = query.price || '';
         const rating = query.rating || '';
         const order = query.order || '';
@@ -142,7 +141,6 @@ flowerRouter.get(
                     },
                 }
                 : {};
-        const categoryFilter = category && category !== 'all' ? { category } : {};
         const ratingFilter =
             rating && rating !== 'all'
                 ? {
@@ -176,7 +174,6 @@ flowerRouter.get(
 
         const flowers = await Flower.find({
             ...queryFilter,
-            ...categoryFilter,
             ...priceFilter,
             ...ratingFilter,
         })
@@ -186,7 +183,6 @@ flowerRouter.get(
 
         const countFlowers = await Flower.countDocuments({
             ...queryFilter,
-            ...categoryFilter,
             ...priceFilter,
             ...ratingFilter,
         });
@@ -199,11 +195,4 @@ flowerRouter.get(
     })
 );
 
-flowerRouter.get(
-    '/categories',
-    expressAsyncHandler(async (req, res) => {
-        const categories = await Flower.find().distinct('category');
-        res.send(categories);
-    })
-);
 export default flowerRouter;
