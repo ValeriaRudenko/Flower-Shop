@@ -261,18 +261,21 @@ export default function SearchScreen() {
 
               <div>
                 {[...Array(pages).keys()].map((x) => (
-                  <LinkContainer
-                    key={x + 1}
-                    className="mx-1"
-                    to={getFilterUrl({ page: x + 1 })}
-                  >
-                    <Button
-                      className={Number(page) === x + 1 ? 'text-bold' : ''}
-                      variant="light"
+                    <LinkContainer
+                        key={x + 1}
+                        className="mx-1"
+                        to={{
+                          pathname: "/search",
+                          search: `?category=${category}&query=${query}&price=${price}&rating=${rating}&order=${order}&page=${x + 1}`,
+                        }}
                     >
-                      {x + 1}
-                    </Button>
-                  </LinkContainer>
+                      <Button
+                          className={Number(page) === x + 1 ? "text-bold" : ""}
+                          variant="light"
+                      >
+                        {x + 1}
+                      </Button>
+                    </LinkContainer>
                 ))}
               </div>
             </>

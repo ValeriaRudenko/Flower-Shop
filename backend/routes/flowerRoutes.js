@@ -3,6 +3,8 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import {Flower} from "../models/flowerModel.js";
+import Product from "../models/productModel.js";
+import productRouter from "./productRoutes.js";
 
 
 const flowerRouter = express.Router();
@@ -119,4 +121,89 @@ flowerRouter.get('/:id', async (req, res) => {
         res.status(404).send({ message: 'Flower Not Found' });
     }
 });
+flowerRouter.get(
+    '/search',
+    expressAsyncHandler(async (req, res) => {
+        const { query } = req;
+        const pageSize = query.pageSize || PAGE_SIZE;
+        const page = query.page || 1;
+        const category = query.category || '';
+        const price = query.price || '';
+        const rating = query.rating || '';
+        const order = query.order || '';
+        const searchQuery = query.query || '';
+
+        const queryFilter =
+            searchQuery && searchQuery !== 'all'
+                ? {
+                    name: {
+                        $regex: searchQuery,
+                        $options: 'i',
+                    },
+                }
+                : {};
+        const categoryFilter = category && category !== 'all' ? { category } : {};
+        const ratingFilter =
+            rating && rating !== 'all'
+                ? {
+                    rating: {
+                        $gte: Number(rating),
+                    },
+                }
+                : {};
+        const priceFilter =
+            price && price !== 'all'
+                ? {
+                    // 1-50
+                    price: {
+                        $gte: Number(price.split('-')[0]),
+                        $lte: Number(price.split('-')[1]),
+                    },
+                }
+                : {};
+        const sortOrder =
+            order === 'featured'
+                ? { featured: -1 }
+                : order === 'lowest'
+                    ? { price: 1 }
+                    : order === 'highest'
+                        ? { price: -1 }
+                        : order === 'toprated'
+                            ? { rating: -1 }
+                            : order === 'newest'
+                                ? { createdAt: -1 }
+                                : { _id: -1 };
+
+        const flowers = await Flower.find({
+            ...queryFilter,
+            ...categoryFilter,
+            ...priceFilter,
+            ...ratingFilter,
+        })
+            .sort(sortOrder)
+            .skip(pageSize * (page - 1))
+            .limit(pageSize);
+
+        const countFlowers = await Flower.countDocuments({
+            ...queryFilter,
+            ...categoryFilter,
+            ...priceFilter,
+            ...ratingFilter,
+        });
+        res.send({
+            flowers,
+            countFlowers,
+            page,
+            pages: Math.ceil(countFlowers / pageSize),
+        });
+    })
+);
+
+flowerRouter.get(
+    '/categories',
+    expressAsyncHandler(async (req, res) => {
+        const categories = await Flower.find().distinct('category');
+        res.send(categories);
+    })
+);
 export default flowerRouter;

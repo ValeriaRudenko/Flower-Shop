@@ -18,11 +18,6 @@ const flowerSchema = new mongoose.Schema(
     },
 );
 
-// const packageSchema = new mongoose.Schema({
-//         type: { type: String, required: true, unique: true },
-//         price: { type: Number, required: true },
-// });
-
 // Створення моделі для квітів на основі схеми
 const Flower = mongoose.model('Flower', flowerSchema);
 // const Package = mongoose.model('Package', packageSchema);
