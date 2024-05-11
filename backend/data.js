@@ -50,6 +50,18 @@ const data = {
       description: 'pink roses bouquet',
     },
     {
+      name: 'Roses bouquet2',
+      slug: 'roses-bouquet2',
+
+      image: '/images/p3.jpg',
+      price: 25,
+      countInStock: 15,
+
+      rating: 4.5,
+      numReviews: 14,
+      description: 'pink roses bouquet',
+    },
+    {
       name: 'Pions bouquet',
       slug: 'pions-bouquet',
 
