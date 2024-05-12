@@ -1,21 +1,42 @@
 import express from 'express';
-
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
-import {Flower} from "../models/flowerModel.js";
+import { Flower } from '../models/flowerModel.js';
 
-
+const PAGE_SIZE = 3;
 
 const flowerRouter = express.Router();
 
 // Fetch all flowers
-// Отримати всі квіти
 flowerRouter.get('/', async (req, res) => {
     const flowers = await Flower.find();
     res.send(flowers);
 });
 
-const PAGE_SIZE = 3;
+// Admin flower route
+flowerRouter.get(
+    '/admin',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const { query } = req;
+        const page = query.page || 1;
+        const pageSize = query.pageSize || PAGE_SIZE;
+
+        const flowers = await Flower.find()
+            .skip(pageSize * (page - 1))
+            .limit(pageSize);
+        const countFlowers = await Flower.countDocuments();
+        res.send({
+            flowers,
+            countFlowers,
+            page,
+            pages: Math.ceil(countFlowers / pageSize),
+        });
+    })
+);
+
+// Search flowers
 flowerRouter.get(
     '/search',
     expressAsyncHandler(async (req, res) => {
@@ -47,7 +68,6 @@ flowerRouter.get(
         const priceFilter =
             price && price !== 'all'
                 ? {
-                    // 1-50
                     price: {
                         $gte: Number(price.split('-')[0]),
                         $lte: Number(price.split('-')[1]),
@@ -91,7 +111,6 @@ flowerRouter.get(
 );
 
 // Create a new flower
-// Створити новий квіт
 flowerRouter.post(
     '/',
     isAuth,
@@ -131,7 +150,6 @@ flowerRouter.post(
 );
 
 // Update a flower
-// Оновити дані квіту
 flowerRouter.put(
     '/:id',
     isAuth,
@@ -175,8 +193,8 @@ flowerRouter.delete(
         }
     })
 );
+
 // Fetch a flower by slug
-// Отримати квіт за унікальним ідентифікатором (slug)
 flowerRouter.get('/slug/:slug', async (req, res) => {
     const flower = await Flower.findOne({ slug: req.params.slug });
     if (flower) {
@@ -185,8 +203,8 @@ flowerRouter.get('/slug/:slug', async (req, res) => {
         res.status(404).send({ message: 'Flower Not Found' });
     }
 });
+
 // Fetch a flower by ID
-// Отримати квіт за ідентифікатором
 flowerRouter.get('/:id', async (req, res) => {
     const flower = await Flower.findById(req.params.id);
     if (flower) {
@@ -195,8 +213,5 @@ flowerRouter.get('/:id', async (req, res) => {
         res.status(404).send({ message: 'Flower Not Found' });
     }
 });
-
-
-
 
 export default flowerRouter;

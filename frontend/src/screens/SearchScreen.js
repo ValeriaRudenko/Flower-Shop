@@ -149,7 +149,7 @@ export default function SearchScreen() {
         <Row>
           {/* Column for department filters */}
           <Col md={3}>
-            <h3>Department</h3>
+
             {/* Filter options for price */}
             <div>
               <h3>Price</h3>

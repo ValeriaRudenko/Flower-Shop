@@ -1,11 +1,9 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
-import  Packing  from '../models/packingModel.js';
+import Packing from '../models/packingModel.js';
 import Product from "../models/productModel.js";
 import productRouter from "./productRoutes.js";
-import {Flower} from "../models/flowerModel.js";
-import flowerRouter from "./flowerRoutes.js";
 
 const packingRouter = express.Router();
 
@@ -47,7 +45,10 @@ packingRouter.post(
         res.status(201).send({ message: 'Packing Created', packing: createdPacking });
     })
 );
+
 const PAGE_SIZE = 3;
+
+// Search for packings
 packingRouter.get(
     '/search',
     expressAsyncHandler(async (req, res) => {
@@ -79,7 +80,6 @@ packingRouter.get(
         const priceFilter =
             price && price !== 'all'
                 ? {
-                    // 1-50
                     price: {
                         $gte: Number(price.split('-')[0]),
                         $lte: Number(price.split('-')[1]),
@@ -128,7 +128,7 @@ packingRouter.post(
     isAuth,
     expressAsyncHandler(async (req, res) => {
         const packingId = req.params.id;
-        const packing = await Product.findById(packingId);
+        const packing = await Packing.findById(packingId);
         if (packing) {
             if (packing.reviews.find((x) => x.name === req.user.name)) {
                 return res
@@ -146,7 +146,7 @@ packingRouter.post(
             packing.rating =
                 packing.reviews.reduce((a, c) => c.rating + a, 0) /
                 packing.reviews.length;
-            const updatedProduct = await packing.save();
+            const updatedPacking = await packing.save();
             res.status(201).send({
                 message: 'Review Created',
                 review: updatedPacking.reviews[updatedPacking.reviews.length - 1],
@@ -224,5 +224,25 @@ packingRouter.get('/:id', async (req, res) => {
         res.status(404).send({ message: 'Packing Not Found' });
     }
 });
+packingRouter.get(
+    '/admin',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const { query } = req;
+        const page = query.page || 1;
+        const pageSize = query.pageSize || PAGE_SIZE;
 
+        const packings = await Packing.find()
+            .skip(pageSize * (page - 1))
+            .limit(pageSize);
+        const countPackings = await Packing.countDocuments();
+        res.send({
+            packings,
+            countPackings,
+            page,
+            pages: Math.ceil(countPackings / pageSize),
+        });
+    })
+);
 export default packingRouter;
