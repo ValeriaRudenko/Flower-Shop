@@ -2,8 +2,7 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import Packing from '../models/packingModel.js';
-import Product from "../models/productModel.js";
-import productRouter from "./productRoutes.js";
+
 
 const packingRouter = express.Router();
 
@@ -19,30 +18,17 @@ packingRouter.post(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const {
-            name,
-            price,
-            slug,
-            image,
-            images,
-            countInStock,
-            rating,
-            numReviews,
-        } = req.body;
-
         const newPacking = new Packing({
-            name,
-            price,
-            slug,
-            image,
-            images,
-            countInStock,
-            rating,
-            numReviews,
+            name: 'sample name ' + Date.now(),
+            slug: 'sample-name-' + Date.now(),
+            image: '/images/p1.jpg',
+            price: 0,
+            countInStock: 0,
+            rating: 0,
+            numReviews: 0,
         });
-
-        const createdPacking = await newPacking.save();
-        res.status(201).send({ message: 'Packing Created', packing: createdPacking });
+        const packing = await newPacking.save();
+        res.send({ message: 'Packing Created', packing });
     })
 );
 
@@ -204,20 +190,30 @@ packingRouter.delete(
         }
     })
 );
+packingRouter.get(
+    '/admin',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+        const { query } = req;
+        const page = query.page || 1;
+        const pageSize = query.pageSize || PAGE_SIZE;
 
+        const packings = await Packing.find()
+            .skip(pageSize * (page - 1))
+            .limit(pageSize);
+        const countPackings = await Packing.countDocuments();
+        res.send({
+            packings,
+            countPackings,
+            page,
+            pages: Math.ceil(countPackings / pageSize),
+        });
+    })
+);
 // Find packing by slug
 packingRouter.get('/slug/:slug', async (req, res) => {
     const packing = await Packing.findOne({ slug: req.params.slug });
-    if (packing) {
-        res.send(packing);
-    } else {
-        res.status(404).send({ message: 'Packing Not Found' });
-    }
-});
-
-// Find packing by ID
-packingRouter.get('/:id', async (req, res) => {
-    const packing = await Packing.findById(req.params.id);
     if (packing) {
         res.send(packing);
     } else {
@@ -245,4 +241,15 @@ packingRouter.get(
         });
     })
 );
+// Find packing by ID
+packingRouter.get('/:id', async (req, res) => {
+    const packing = await Packing.findById(req.params.id);
+    if (packing) {
+        res.send(packing);
+    } else {
+        res.status(404).send({ message: 'Packing Not Found' });
+    }
+});
+
+
 export default packingRouter;

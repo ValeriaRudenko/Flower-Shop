@@ -59,7 +59,6 @@ export default function ProductEditScreen() {
   const [image, setImage] = useState('');
   const [images, setImages] = useState([]);
   const [countInStock, setCountInStock] = useState('');
-  const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
 
   useEffect(() => {
@@ -73,7 +72,6 @@ export default function ProductEditScreen() {
         setImage(data.image);
         setImages(data.images);
         setCountInStock(data.countInStock);
-        setBrand(data.brand);
         setDescription(data.description);
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (error) {
@@ -99,7 +97,6 @@ export default function ProductEditScreen() {
           price,
           image,
           images,
-          brand,
           countInStock,
           description,
         },
@@ -223,14 +220,6 @@ export default function ProductEditScreen() {
               onChange={(e) => uploadFileHandler(e, true)}
             />
             {loadingUpload && <LoadingBox></LoadingBox>}
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="brand">
-            <Form.Label>Brand</Form.Label>
-            <Form.Control
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-              required
-            />
           </Form.Group>
           <Form.Group className="mb-3" controlId="countInStock">
             <Form.Label>Count In Stock</Form.Label>

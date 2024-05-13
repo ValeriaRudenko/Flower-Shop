@@ -19,7 +19,7 @@ const reducer = (state, action) => {
         ...state,
         products: action.payload.products,
         flowers: action.payload.flowers,
-        // packings: action.payload.packings,
+        packings: action.payload.packings,
         page: action.payload.page,
         pages: action.payload.pages,
         loading: false,
@@ -61,7 +61,7 @@ export default function ProductListScreen() {
       error,
       products,
       flowers,
-      // packings,
+      packings,
       pages,
       loadingCreate,
       loadingDelete,
@@ -96,13 +96,13 @@ export default function ProductListScreen() {
         });
         console.log('Received flowers:', flowerData);
 
-        // console.log('Fetching packings...');
-        // const { data: packingData } = await axios.get(`/api/packings/admin?page=${page}`, {
-        //   headers: { Authorization: `Bearer ${userInfo.token}` },
-        // });
-        // console.log('Received packings:', packingData);
+        console.log('Fetching packings...');
+        const { data: packingData } = await axios.get(`/api/packings/admin?page=${page}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        console.log('Received packings:', packingData);
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: { products: data.products, flowers: flowerData.flowers } });
+        dispatch({ type: 'FETCH_SUCCESS', payload: { products: data.products, flowers: flowerData.flowers, packings: packingData.packings } });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -114,20 +114,23 @@ export default function ProductListScreen() {
     }
   }, [page, userInfo, successDelete]);
 
-  const createHandler = async () => {
-    if (window.confirm('Are you sure to create?')) {
+  const createHandler = async (type) => {
+    const createUrl =
+        type === 'product'
+            ? '/api/products'
+            : type === 'flower'
+                ? '/api/flowers'
+                : '/api/packings';
+
+    if (window.confirm(`Are you sure you want to create a new ${type}?`)) {
       try {
         dispatch({ type: 'CREATE_REQUEST' });
-        const { data } = await axios.post(
-            '/api/products',
-            {},
-            {
-              headers: { Authorization: `Bearer ${userInfo.token}` },
-            }
-        );
-        toast.success('product created successfully');
+        const { data } = await axios.post(createUrl, {}, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        });
+        toast.success(`${type} created successfully`);
         dispatch({ type: 'CREATE_SUCCESS' });
-        navigate(`/admin/product/${data.product._id}`);
+        navigate(`/admin/${type}/${data[type]._id}`);
       } catch (err) {
         toast.error(getError(err));
         dispatch({
@@ -162,8 +165,14 @@ export default function ProductListScreen() {
           </Col>
           <Col className="col text-end">
             <div>
-              <Button variant="outline-primary" type="button" onClick={createHandler}>
+              <Button variant="outline-primary" type="button" onClick={() => createHandler('product')}>
                 Create Product
+              </Button>
+              <Button variant="outline-primary" type="button" onClick={() => createHandler('flower')}>
+                Create Flower
+              </Button>
+              <Button variant="outline-primary" type="button" onClick={() => createHandler('packing')}>
+                Create Packing
               </Button>
             </div>
           </Col>
@@ -239,31 +248,31 @@ export default function ProductListScreen() {
                       </td>
                     </tr>
                 ))}
-                {/*{packings && packings.length > 0 && packings.map((packing) => (*/}
-                {/*    <tr key={packing._id}>*/}
-                {/*      <td>{packing._id}</td>*/}
-                {/*      <td>{packing.name}</td>*/}
-                {/*      <td>PACKING</td>*/}
-                {/*      <td>{packing.price}</td>*/}
-                {/*      <td>*/}
-                {/*        <Button*/}
-                {/*            type="button"*/}
-                {/*            variant="success"*/}
-                {/*            onClick={() => navigate(`/admin/packing/${packing._id}`)}*/}
-                {/*        >*/}
-                {/*          <i className="fas fa-edit"></i>*/}
-                {/*        </Button>*/}
+                {packings && packings.length > 0 && packings.map((packing) => (
+                    <tr key={packing._id}>
+                      <td>{packing._id}</td>
+                      <td>{packing.name}</td>
+                      <td>PACKING</td>
+                      <td>{packing.price}</td>
+                      <td>
+                        <Button
+                            type="button"
+                            variant="success"
+                            onClick={() => navigate(`/admin/packing/${packing._id}`)}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </Button>
 
-                {/*        <Button*/}
-                {/*            type="button"*/}
-                {/*            variant="danger"*/}
-                {/*            onClick={() => deleteHandler(packing)}*/}
-                {/*        >*/}
-                {/*          <i className="fas fa-trash"></i>*/}
-                {/*        </Button>*/}
-                {/*      </td>*/}
-                {/*    </tr>*/}
-                {/*))}*/}
+                        <Button
+                            type="button"
+                            variant="danger"
+                            onClick={() => deleteHandler(packing)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                ))}
                 </tbody>
 
 
@@ -273,7 +282,7 @@ export default function ProductListScreen() {
                     <Link
                         className={x + 1 === Number(page) ? 'btn text-bold' : 'btn'}
                         key={x + 1}
-                        to={`/admin/products?page=${x + 1}`}
+                        to={`/admin/flowers?page=${x + 1}`}
                     >
                       {x + 1}
                     </Link>

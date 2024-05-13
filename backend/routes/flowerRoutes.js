@@ -2,6 +2,8 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import { Flower } from '../models/flowerModel.js';
+import Product from "../models/productModel.js";
+import productRouter from "./productRoutes.js";
 
 const PAGE_SIZE = 3;
 
@@ -116,36 +118,21 @@ flowerRouter.post(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const {
-            name,
-            slug,
-            image,
-            images,
-            color,
-            size,
-            description,
-            price,
-            countInStock,
-            rating,
-            numReviews,
-        } = req.body;
-
         const newFlower = new Flower({
-            name,
-            slug,
-            image,
-            images,
-            color,
-            size,
-            description,
-            price,
-            countInStock,
-            rating,
-            numReviews,
-        });
+            name: 'sample name ' + Date.now(),
+            slug: 'sample-name-' + Date.now(),
+            image: '/images/p1.jpg',
+            price: 0,
+            size: 'Medium',
+            color: 'Red',
 
-        const createdFlower = await newFlower.save();
-        res.status(201).send({ message: 'Flower Created', flower: createdFlower });
+            countInStock: 0,
+            rating: 0,
+            numReviews: 0,
+            description: 'sample description',
+        });
+        const flower = await newFlower.save();
+        res.send({ message: 'Flower Created', flower });
     })
 );
 

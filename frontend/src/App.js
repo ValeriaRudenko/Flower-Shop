@@ -25,10 +25,10 @@ import axios from "axios";
 import SearchBar from "./components/SearchBar";
 import SearchScreen from "./screens/SearchScreen";
 import ProtectedRoute from "./components/ProtectedRoute";
-import DashboardScreen from "./screens/DashboardScreen";
 import AdminRoute from "./components/AdminRoute";
 import ProductListScreen from "./screens/ProductListScreen";
 import ProductEditScreen from "./screens/ProductEditScreen";
+import FlowerEditScreen from "./screens/FlowerEditScreen";
 import OrderListScreen from "./screens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
@@ -36,6 +36,7 @@ import BouquetsScreen from "./screens/BouquetsScreen";
 import CreateBouquetScreen from "./screens/CreateBouquetScreen";
 import FlowerScreen from "./screens/FlowerScreen";
 import PackingScreen from "./screens/PackingScreen";
+import PackingEditScreen from "./screens/PackingEditScreen";
 
 function App() {
     // Accessing global state and dispatch function from Store context
@@ -124,9 +125,7 @@ function App() {
                     )}
                     {userInfo && userInfo.isAdmin && (
                         <NavDropdown title="Admin" id="admin-nav-dropdown">
-                          <LinkContainer to="/admin/dashboard">
-                            <NavDropdown.Item>Dashboard</NavDropdown.Item>
-                          </LinkContainer>
+
                           <LinkContainer to="/admin/products">
                             <NavDropdown.Item>Products</NavDropdown.Item>
                           </LinkContainer>
@@ -183,14 +182,7 @@ function App() {
                       </ProtectedRoute>
                     }
                 ></Route>
-                <Route
-                    path="/admin/dashboard"
-                    element={
-                      <AdminRoute>
-                        <DashboardScreen/>
-                      </AdminRoute>
-                    }
-                ></Route>
+
                 <Route
                     path="/admin/products"
                     element={
@@ -199,6 +191,7 @@ function App() {
                       </AdminRoute>
                     }
                 ></Route>
+
                 <Route
                     path="/admin/product/:id"
                     element={
@@ -207,6 +200,22 @@ function App() {
                       </AdminRoute>
                     }
                 ></Route>
+                  <Route
+                      path="/admin/flower/:id"
+                      element={
+                          <AdminRoute>
+                              <FlowerEditScreen/>
+                          </AdminRoute>
+                      }
+                  ></Route>
+                  <Route
+                      path="/admin/packing/:id"
+                      element={
+                          <AdminRoute>
+                              <PackingEditScreen/>
+                          </AdminRoute>
+                      }
+                  ></Route>
                 <Route
                     path="/admin/orders"
                     element={
