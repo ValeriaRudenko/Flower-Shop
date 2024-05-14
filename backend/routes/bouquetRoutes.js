@@ -232,7 +232,7 @@ bouquetRouter.get(
 );
 
 bouquetRouter.get('/slug/:slug', async (req, res) => {
-  const product = await Bouquet.findOne({ slug: req.params.slug });
+  const product = await Bouquet.findOne({ slug: req.params.slug }).populate('reviews');
   if (product) {
     res.send(product);
   } else {

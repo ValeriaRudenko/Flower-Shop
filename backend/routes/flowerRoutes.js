@@ -114,11 +114,12 @@ flowerRouter.post(
     '/:id/reviews',
     isAuth,
     expressAsyncHandler(async (req, res) => {
-        const productId = req.params.id;
-        const product = await Flower.findById(productId);
-        if (product) {
+        const flowerId = req.params.id;
+        const flower = await Flower.findById(flowerId);
+
+        if (flower) {
             // Check if the user has already submitted a review
-            const existingReview = product.reviews.find((review) => review.name === req.user.name);
+            const existingReview = flower.reviews.find((review) => review.name === req.user.name);
             if (existingReview) {
                 return res.status(400).send({ message: 'You already submitted a review' });
             }
@@ -133,7 +134,7 @@ flowerRouter.post(
 
             // Create a new Review document
             const newReview = new Review({
-                product: productId, // Set the product reference
+                product: flowerId, // Set the flower reference
                 name: req.user.name,
                 rating: rating, // Assign the parsed rating
                 comment: req.body.comment,
@@ -141,33 +142,38 @@ flowerRouter.post(
 
             // Save the new review to the database
             await newReview.save();
+            // Update the flower's reviews array with the ObjectId reference
+            flower.reviews.push(newReview._id);
 
-            // Update the product's reviews array with the ObjectId reference
-            product.reviews.push(newReview._id);
-
-            // Update product's numReviews and rating fields
-            product.numReviews = product.reviews.length;
-            const totalRating = product.reviews.reduce(async (total, reviewId) => {
+            // Update flower's numReviews and rating fields
+            flower.numReviews = flower.reviews.length;
+            const totalRating = await flower.reviews.reduce(async (accPromise, reviewId) => {
+                const acc = await accPromise;
                 const review = await Review.findById(reviewId);
-                return total + review.rating;
-            }, 0);
-            product.rating = totalRating / product.reviews.length;
+                return acc + review.rating;
+            }, Promise.resolve(0));
+            flower.rating = totalRating / flower.reviews.length;
 
-            // Save the updated product
-            await product.save();
+            try {
+                await flower.save();
+                console.log('Flower updated successfully');
+            } catch (error) {
+                console.error('Error updating flower:', error);
+            }
 
             // Send success response
             res.status(201).send({
                 message: 'Review Created',
                 review: newReview,
-                numReviews: product.numReviews,
-                rating: product.rating,
+                numReviews: flower.numReviews,
+                rating: flower.rating,
             });
         } else {
-            res.status(404).send({ message: 'Product Not Found' });
+            res.status(404).send({ message: 'Flower Not Found' });
         }
     })
 );
+
 
 // Create a new flower
 flowerRouter.post(
@@ -240,7 +246,7 @@ flowerRouter.delete(
 
 // Fetch a flower by slug
 flowerRouter.get('/slug/:slug', async (req, res) => {
-    const flower = await Flower.findOne({ slug: req.params.slug });
+    const flower = await Flower.findOne({ slug: req.params.slug }).populate('reviews');
     if (flower) {
         res.send(flower);
     } else {

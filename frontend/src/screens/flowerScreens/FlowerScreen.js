@@ -42,6 +42,7 @@ export default function FlowerScreen() {
             try {
                 const result = await axios.get(`/api/flowers/slug/${slug}`);
                 dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+                console.log(result.data); // Log the reviews array
             } catch (error) {
                 dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
             }
@@ -75,12 +76,12 @@ export default function FlowerScreen() {
             return;
         }
         try {
+
             const reviewData = {
                 rating: rating,
                 comment: comment,
                 name: userInfo.name, // Assuming userInfo contains user's name
             };
-
             const response = await axios.post(
                 `/api/flowers/${product._id}/reviews`,
                 reviewData,
@@ -116,9 +117,6 @@ export default function FlowerScreen() {
             dispatch({ type: 'CREATE_FAIL' });
         }
     };
-
-    // Console log all reviews
-    console.log('All reviews:', product.reviews);
 
     return loading ? (
         <LoadingBox />
