@@ -1,11 +1,5 @@
 import axios from 'axios';
-import React, {
-    useContext,
-    useEffect,
-    useReducer,
-    useRef,
-    useState,
-} from 'react';
+import React, {useContext, useEffect, useReducer, useRef, useState,} from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -14,38 +8,17 @@ import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import Rating from '../components/Rating';
-import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import { getError } from './utils';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
-import ProductPrice from "../components/Price";
+import {getError} from './utils';
+import {Store} from '../Store';
+import {toast} from 'react-toastify';
+import FlowerPrice from "../components/Price";
+import {reducer} from "../components/reducers/Reducer";
 
 //reducer function
-
-const reducer = (state, action) => {
-    switch (action.type) {
-        case 'REFRESH_PRODUCT':
-            return { ...state, flower: action.payload };
-        case 'CREATE_REQUEST':
-            return { ...state, loadingCreateReview: true };
-        case 'CREATE_SUCCESS':
-            return { ...state, loadingCreateReview: false };
-        case 'CREATE_FAIL':
-            return { ...state, loadingCreateReview: false };
-        case 'FETCH_REQUEST':
-            return { ...state, loading: true };
-        case 'FETCH_SUCCESS':
-            return { ...state, flower: action.payload, loading: false };
-        case 'FETCH_FAIL':
-            return { ...state, loading: false, error: action.payload };
-        default:
-            return state;
-    }
-};
 
 export default function FlowerScreen() {
     let reviewsRef = useRef();
@@ -60,7 +33,7 @@ export default function FlowerScreen() {
 
     const [{ loading, error, flower, loadingCreateReview }, dispatch] =
         useReducer(reducer, {
-            flower: {},
+            flower: [],
             loading: true,
             error: '',
         });
@@ -73,7 +46,7 @@ export default function FlowerScreen() {
             } catch (error) {
                 dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
             }
-            //setProducts(result.data);
+            //setFlowers(result.data);
         };
         fetchData();
     }, [slug]);
@@ -103,31 +76,50 @@ export default function FlowerScreen() {
             return;
         }
         try {
-            const { data } = await axios.post(
+            const reviewData = {
+                rating: rating,
+                comment: comment,
+                name: userInfo.name, // Assuming userInfo contains user's name
+            };
+
+            const response = await axios.post(
                 `/api/flowers/${flower._id}/reviews`,
-                { rating, comment, name: userInfo.name },
+                reviewData,
                 {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
+                    headers: {
+                        Authorization: `Bearer ${userInfo.token}`,
+                    },
                 }
             );
 
-            dispatch({
-                type: 'CREATE_SUCCESS',
-            });
-            toast.success('Review submitted successfully');
+            const { data } = response;
+            // Update local state with new review data
             flower.reviews.unshift(data.review);
             flower.numReviews = data.numReviews;
             flower.rating = data.rating;
-            dispatch({ type: 'REFRESH_FLOWER', payload: flower });
+
+            // Dispatch actions to update state
+            dispatch({ type: 'CREATE_SUCCESS' });
+            dispatch({ type: 'REFRESH_PRODUCT', payload: flower });
+
+
+            // Scroll to reviews section
             window.scrollTo({
                 behavior: 'smooth',
                 top: reviewsRef.current.offsetTop,
             });
+
+            toast.success('Review submitted successfully');
         } catch (error) {
-            toast.error(getError(error));
+            // Handle errors
+            const errorMessage = getError(error);
+            toast.error(errorMessage);
             dispatch({ type: 'CREATE_FAIL' });
         }
     };
+
+    // Console log all reviews
+    console.log('All reviews:', flower.reviews);
 
     return loading ? (
         <LoadingBox />
@@ -155,32 +147,30 @@ export default function FlowerScreen() {
                             ></Rating>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                            <ProductPrice
+                            <FlowerPrice
                                 price={flower.price}
-                            ></ProductPrice>
+                            ></FlowerPrice>
                         </ListGroup.Item>
-                        {/*<ListGroup.Item>*/}
-                        {/*    <Row xs={1} md={2} className="g-2">*/}
-                        {/*        {[flower.image, ...flower.images].map((x) => (*/}
-                        {/*            <Col key={x}>*/}
-                        {/*                <Card>*/}
-                        {/*                    <Button*/}
-                        {/*                        className="thumbnail"*/}
-                        {/*                        type="button"*/}
-                        {/*                        variant="light"*/}
-                        {/*                        onClick={() => setSelectedImage(x)}*/}
-                        {/*                    >*/}
-                        {/*                        <Card.Img variant="top" src={x} alt="product" />*/}
-                        {/*                    </Button>*/}
-                        {/*                </Card>*/}
-                        {/*            </Col>*/}
-                        {/*        ))}*/}
-                        {/*    </Row>*/}
-                        {/*</ListGroup.Item>*/}
+                        <ListGroup.Item>
+                            <Row xs={1} md={2} className="g-2">
+                                {[flower.image, ...flower.images].map((x) => (
+                                    <Col key={x}>
+                                        <Card>
+                                            <Button
+                                                className="thumbnail"
+                                                type="button"
+                                                variant="light"
+                                                onClick={() => setSelectedImage(x)}
+                                            >
+                                                <Card.Img variant="top" src={x} alt="flower" />
+                                            </Button>
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </ListGroup.Item>
                         <ListGroup.Item>
                             Description : <p>{flower.description}</p>
-                            Color: <p>{flower.color}</p>
-                            Size: <p>{flower.size}</p>
                         </ListGroup.Item>
                     </ListGroup>
                 </Col>
@@ -189,9 +179,9 @@ export default function FlowerScreen() {
                         <Card.Body>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
-                                    <ProductPrice
+                                    <FlowerPrice
                                         price={flower.price}
-                                    ></ProductPrice>
+                                    ></FlowerPrice>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Row>
@@ -234,11 +224,12 @@ export default function FlowerScreen() {
                         <ListGroup.Item key={review._id}>
                             <strong>{review.name}</strong>
                             <Rating rating={review.rating} caption=" "></Rating>
-                            <p>{review.createdAt.substring(0, 10)}</p>
+                            {review.createdAt && <p>{review.createdAt.substring(0, 10)}</p>}
                             <p>{review.comment}</p>
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
+
                 <div className="my-3">
                     {userInfo ? (
                         <form onSubmit={submitHandler}>

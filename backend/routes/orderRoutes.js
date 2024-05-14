@@ -2,7 +2,7 @@ import express from 'express'; // Importing express library
 import expressAsyncHandler from 'express-async-handler'; // Importing expressAsyncHandler for handling async functions
 import Order from '../models/orderModel.js'; // Importing Order model
 import User from '../models/userModel.js'; // Importing User model
-import Product from '../models/productModel.js'; // Importing Product model
+import Bouquet from '../models/bouquetModel.js'; // Importing Product model
 import { isAuth, isAdmin } from '../utils.js'; // Importing authentication middleware functions
 
 const orderRouter = express.Router(); // Creating a new router instance

@@ -1,5 +1,5 @@
 import express from 'express';
-import Product from '../models/productModel.js';
+import Bouquet from '../models/bouquetModel.js';
 
 import data from '../data.js';
 import User from '../models/userModel.js';
@@ -11,10 +11,10 @@ const seedRouter = express.Router();
 seedRouter.get('/', async (req, res) => {
   try {
     // Remove existing products
-    await Product.deleteMany({});
+    await Bouquet.deleteMany({});
 
     // Insert new products
-    const createdProducts = await Product.insertMany(data.products);
+    const createdProducts = await Bouquet.insertMany(data.products);
 
     // Remove existing flowers
     await Flower.deleteMany({});

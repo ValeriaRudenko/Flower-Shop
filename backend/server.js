@@ -3,7 +3,7 @@ import path from "path";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import seedRouter from "./routes/seedRoutes.js";
-import productRouter from "./routes/productRoutes.js";
+import bouquetRouter from "./routes/bouquetRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
 import uploadRouter from "./routes/uploadRoutes.js";
@@ -38,7 +38,7 @@ app.use("/api/upload", uploadRouter);
 // Маршрути для початкового заповнення даними
 app.use("/api/seed", seedRouter);
 // Routes for products
-app.use("/api/products", productRouter);
+app.use("/api/products", bouquetRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/flowers", flowerRouter);

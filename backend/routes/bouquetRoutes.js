@@ -1,17 +1,17 @@
 import express from 'express';
-import Product from '../models/productModel.js';
+import Bouquet from '../models/bouquetModel.js';
 import Review from '../models/reviewModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 
-const productRouter = express.Router();
+const bouquetRouter = express.Router();
 
-productRouter.get('/', async (req, res) => {
-  const products = await Product.find();
+bouquetRouter.get('/', async (req, res) => {
+  const products = await Bouquet.find();
   res.send(products);
 });
 
-productRouter.get(
+bouquetRouter.get(
   '/admin',
   isAuth,
   isAdmin,
@@ -20,10 +20,10 @@ productRouter.get(
     const page = query.page || 1;
     const pageSize = query.pageSize || PAGE_SIZE;
 
-    const products = await Product.find()
+    const products = await Bouquet.find()
       .skip(pageSize * (page - 1))
       .limit(pageSize);
-    const countProducts = await Product.countDocuments();
+    const countProducts = await Bouquet.countDocuments();
     res.send({
       products,
       countProducts,
@@ -33,12 +33,12 @@ productRouter.get(
   })
 );
 
-productRouter.post(
+bouquetRouter.post(
   '/',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const newProduct = new Product({
+    const newProduct = new Bouquet({
       name: 'sample name ' + Date.now(),
       slug: 'sample-name-' + Date.now(),
       image: '/images/p1.jpg',
@@ -55,13 +55,13 @@ productRouter.post(
   })
 );
 
-productRouter.put(
+bouquetRouter.put(
   '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = await Bouquet.findById(productId);
     if (product) {
       product.name = req.body.name;
       product.slug = req.body.slug;
@@ -79,12 +79,12 @@ productRouter.put(
   })
 );
 
-productRouter.post(
+bouquetRouter.post(
     '/:id/reviews',
     isAuth,
     expressAsyncHandler(async (req, res) => {
         const productId = req.params.id;
-        const product = await Product.findById(productId);
+        const product = await Bouquet.findById(productId);
         if (product) {
             // Check if the user has already submitted a review
             const existingReview = product.reviews.find((review) => review.name === req.user.name);
@@ -140,12 +140,12 @@ productRouter.post(
 
 
 
-productRouter.delete(
+bouquetRouter.delete(
   '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
+    const product = await Bouquet.findById(req.params.id);
     if (product) {
       await product.remove();
       res.send({ message: 'Product Deleted' });
@@ -157,7 +157,7 @@ productRouter.delete(
 
 const PAGE_SIZE = 20;
 
-productRouter.get(
+bouquetRouter.get(
   '/search',
   expressAsyncHandler(async (req, res) => {
     const { query } = req;
@@ -208,7 +208,7 @@ productRouter.get(
         ? { createdAt: -1 }
         : { _id: -1 };
 
-    const products = await Product.find({
+    const products = await Bouquet.find({
       ...queryFilter,
       ...priceFilter,
       ...ratingFilter,
@@ -217,7 +217,7 @@ productRouter.get(
       .skip(pageSize * (page - 1))
       .limit(pageSize);
 
-    const countProducts = await Product.countDocuments({
+    const countProducts = await Bouquet.countDocuments({
       ...queryFilter,
       ...priceFilter,
       ...ratingFilter,
@@ -231,16 +231,16 @@ productRouter.get(
   })
 );
 
-productRouter.get('/slug/:slug', async (req, res) => {
-  const product = await Product.findOne({ slug: req.params.slug });
+bouquetRouter.get('/slug/:slug', async (req, res) => {
+  const product = await Bouquet.findOne({ slug: req.params.slug });
   if (product) {
     res.send(product);
   } else {
     res.status(404).send({ message: 'Product Not Found' });
   }
 });
-productRouter.get('/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id);
+bouquetRouter.get('/:id', async (req, res) => {
+  const product = await Bouquet.findById(req.params.id);
   if (product) {
     res.send(product);
   } else {
@@ -248,5 +248,5 @@ productRouter.get('/:id', async (req, res) => {
   }
 });
 
-export default productRouter;
+export default bouquetRouter;
 

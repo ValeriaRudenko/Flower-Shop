@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-const productSchema = new Schema(
+const bouquetSchema = new Schema(
     {
         name: { type: String, required: true, unique: true },
         slug: { type: String, required: true, unique: true },
@@ -20,5 +20,5 @@ const productSchema = new Schema(
     }
 );
 
-const Product = mongoose.model('Product', productSchema);
-export default Product;
+const Bouquet = mongoose.model('Product', bouquetSchema);
+export default Bouquet;
