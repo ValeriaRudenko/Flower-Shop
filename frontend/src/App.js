@@ -10,15 +10,15 @@ import Nav from "react-bootstrap/Nav";
 import { useContext, useEffect, useState } from "react";
 import { Store } from "./Store";
 import CartScreen from "./screens/CartScreen";
-import SigninScreen from "./screens/SigninScreen";
+import SignInScreen from "./screens/userScreens/SignInScreen";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ShippingAddressScreen from "./screens/ShippingAddressScreen";
-import SignupScreen from "./screens/SignupScreen";
+import SignUpScreen from "./screens/userScreens/SignUpScreen";
 import PlaceOrderScreen from "./screens/PlaceOrderScreen";
 import OrderScreen from "./screens/OrderScreen";
-import OrderHistoryScreen from "./screens/OrderHistoryScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import OrderHistoryScreen from "./screens/userScreens/OrderHistoryScreen";
+import ProfileScreen from "./screens/userScreens/ProfileScreen";
 import Button from "react-bootstrap/Button";
 import { getError } from "./screens/utils";
 import axios from "axios";
@@ -26,15 +26,15 @@ import SearchBar from "./components/SearchBar";
 import SearchScreen from "./screens/SearchScreen";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
-import ProductListScreen from "./screens/ProductListScreen";
-import ProductEditScreen from "./screens/ProductEditScreen";
-import FlowerEditScreen from "./screens/FlowerEditScreen";
-import OrderListScreen from "./screens/OrderListScreen";
+import ProductListScreen from "./screens/adminScreens/ProductListScreen";
+import ProductEditScreen from "./screens/adminScreens/ProductEditScreen";
+import FlowerEditScreen from "./screens/adminScreens/FlowerEditScreen";
+import OrderListScreen from "./screens/adminScreens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
-import BouquetsScreen from "./screens/BouquetsScreen";
-import CreateBouquetScreen from "./screens/CreateBouquetScreen";
-import FlowerScreen from "./screens/FlowerScreen";
+import BouquetsScreen from "./screens/flowerScreens/BouquetsScreen";
+import CreateBouquetScreen from "./screens/flowerScreens/CreateBouquetScreen";
+import FlowerScreen from "./screens/flowerScreens/FlowerScreen";
 import PackingScreen from "./screens/PackingScreen";
 import PackingEditScreen from "./screens/PackingEditScreen";
 
@@ -151,8 +151,8 @@ function App() {
                   <Route path="/flower/:slug" element={<FlowerScreen/>}/>
                   <Route path="/packing/:slug" element={<PackingScreen/>}/>
                 <Route path="/cart" element={<CartScreen/>}/>
-                <Route path="/signin" element={<SigninScreen/>}/>
-                <Route path="/signup" element={<SignupScreen/>}/>
+                <Route path="/signin" element={<SignInScreen/>}/>
+                <Route path="/signup" element={<SignUpScreen/>}/>
                 <Route path="/bouquets" element={<BouquetsScreen/>}/>
                 <Route path="/createbouquet" element={<CreateBouquetScreen/>}/>
                 <Route

@@ -9,16 +9,15 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import {Link, useNavigate, useParams} from 'react-router-dom';
-import Rating from '../components/Rating';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import {getError} from './utils';
-import {Store} from '../Store';
+import Rating from '../../components/Rating';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
+import {getError} from '../utils';
+import {Store} from '../../Store';
 import {toast} from 'react-toastify';
-import FlowerPrice from "../components/Price";
-import {reducer} from "../components/reducers/Reducer";
+import FlowerPrice from "../../components/Price";
+import {reducer} from "../../components/reducers/Reducer";
 
-//reducer function
 
 export default function FlowerScreen() {
     let reviewsRef = useRef();
@@ -31,9 +30,9 @@ export default function FlowerScreen() {
     const params = useParams();
     const { slug } = params;
 
-    const [{ loading, error, flower, loadingCreateReview }, dispatch] =
+    const [{ loading, error, product, loadingCreateReview }, dispatch] =
         useReducer(reducer, {
-            flower: [],
+            product: [],
             loading: true,
             error: '',
         });
@@ -55,16 +54,16 @@ export default function FlowerScreen() {
     const { cart, userInfo } = state;
 
     const addToCartHandler = async () => {
-        const itemExist = cart.cartItems.find((x) => x._id === flower._id);
+        const itemExist = cart.cartItems.find((x) => x._id === product._id);
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
-        const { data } = await axios.get(`/api/flowers/${flower._id}`);
+        const { data } = await axios.get(`/api/flowers/${product._id}`);
         if (data.countInStock < quantity) {
             window.alert('Sorry. This flower is out of stock');
             return;
         }
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: { ...flower, quantity },
+            payload: { ...product, quantity },
         });
         navigate('/cart');
     };
@@ -83,7 +82,7 @@ export default function FlowerScreen() {
             };
 
             const response = await axios.post(
-                `/api/flowers/${flower._id}/reviews`,
+                `/api/flowers/${product._id}/reviews`,
                 reviewData,
                 {
                     headers: {
@@ -94,13 +93,13 @@ export default function FlowerScreen() {
 
             const { data } = response;
             // Update local state with new review data
-            flower.reviews.unshift(data.review);
-            flower.numReviews = data.numReviews;
-            flower.rating = data.rating;
+            product.reviews.unshift(data.review);
+            product.numReviews = data.numReviews;
+            product.rating = data.rating;
 
             // Dispatch actions to update state
             dispatch({ type: 'CREATE_SUCCESS' });
-            dispatch({ type: 'REFRESH_PRODUCT', payload: flower });
+            dispatch({ type: 'REFRESH_PRODUCT', payload: product });
 
 
             // Scroll to reviews section
@@ -119,7 +118,7 @@ export default function FlowerScreen() {
     };
 
     // Console log all reviews
-    console.log('All reviews:', flower.reviews);
+    console.log('All reviews:', product.reviews);
 
     return loading ? (
         <LoadingBox />
@@ -131,29 +130,29 @@ export default function FlowerScreen() {
                 <Col md={6}>
                     <img
                         className="img-large"
-                        src={selectedImage || flower.image}
-                        alt={flower.name}
+                        src={selectedImage || product.image}
+                        alt={product.name}
                     />
                 </Col>
                 <Col md={3}>
                     <ListGroup variant="flush">
                         <ListGroup.Item>
-                            <h2>{flower.name}</h2>
+                            <h2>{product.name}</h2>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Rating
-                                rating={flower.rating}
-                                numReviews={flower.numReviews}
+                                rating={product.rating}
+                                numReviews={product.numReviews}
                             ></Rating>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <FlowerPrice
-                                price={flower.price}
+                                price={product.price}
                             ></FlowerPrice>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row xs={1} md={2} className="g-2">
-                                {[flower.image, ...flower.images].map((x) => (
+                                {[product.image, ...product.images].map((x) => (
                                     <Col key={x}>
                                         <Card>
                                             <Button
@@ -170,7 +169,7 @@ export default function FlowerScreen() {
                             </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                            Description : <p>{flower.description}</p>
+                            Description : <p>{product.description}</p>
                         </ListGroup.Item>
                     </ListGroup>
                 </Col>
@@ -180,14 +179,14 @@ export default function FlowerScreen() {
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
                                     <FlowerPrice
-                                        price={flower.price}
+                                        price={product.price}
                                     ></FlowerPrice>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Row>
                                         <Col>Status:</Col>
                                         <Col>
-                                            {flower.countInStock > 0 ? (
+                                            {product.countInStock > 0 ? (
                                                 <Badge bg="success">In Stock</Badge>
                                             ) : (
                                                 <Badge bg="danger">Not Available</Badge>
@@ -195,7 +194,7 @@ export default function FlowerScreen() {
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>
-                                {flower.countInStock > 0 && (
+                                {product.countInStock > 0 && (
                                     <ListGroup.Item>
                                         <div className="d-grid">
                                             <Button
@@ -215,12 +214,12 @@ export default function FlowerScreen() {
             <div className="my-3">
                 <h2 ref={reviewsRef}>Reviews</h2>
                 <div className="mb-3">
-                    {flower.reviews.length === 0 && (
+                    {product.reviews.length === 0 && (
                         <MessageBox>There is no review</MessageBox>
                     )}
                 </div>
                 <ListGroup>
-                    {flower.reviews.map((review) => (
+                    {product.reviews.map((review) => (
                         <ListGroup.Item key={review._id}>
                             <strong>{review.name}</strong>
                             <Rating rating={review.rating} caption=" "></Rating>
@@ -276,7 +275,7 @@ export default function FlowerScreen() {
                     ) : (
                         <MessageBox>
                             Please{' '}
-                            <Link to={`/signin?redirect=/flower/${flower.slug}`}>
+                            <Link to={`/signin?redirect=/flower/${product.slug}`}>
                                 Sign In
                             </Link>{' '}
                             to write a review

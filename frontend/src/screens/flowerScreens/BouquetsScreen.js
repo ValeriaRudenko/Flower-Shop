@@ -3,25 +3,13 @@ import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import Product from '../components/Product';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
+import Product from '../../components/Product';
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
-// Reducer function to manage component state
-const reducer = (state, action) => {
-    switch (action.type) {
-        case 'FETCH_REQUEST':
-            return { ...state, loading: true };
-        case 'FETCH_SUCCESS':
-            return { ...state, products: action.payload, loading: false };
-        case 'FETCH_FAIL':
-            return { ...state, loading: false, error: action.payload };
-        default:
-            return state;
-    }
-};
+import {reducer} from "../../components/reducers/ReducerProducts";
 
 export default function BouquetsScreen() {
     const [{ loading, error, products }, dispatch] = useReducer(reducer, {

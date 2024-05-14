@@ -11,7 +11,6 @@ import MessageBox from '../components/MessageBox';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductPrice from "../components/Price";
-import Product from "../components/Product";
 
 export default function CartScreen() {
   const navigate = useNavigate();

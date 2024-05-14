@@ -3,10 +3,10 @@ import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import Flower from '../components/Flower';
-import Packing from '../components/Packing';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
+import Flower from '../../components/Flower';
+import Packing from '../../components/Packing';
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
