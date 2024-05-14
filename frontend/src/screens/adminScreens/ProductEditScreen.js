@@ -222,7 +222,7 @@ export default function ProductEditScreen() {
               variant="outline-primary"
               type="submit"
             >
-              Update
+              Save
             </Button>
             {loadingUpdate && <LoadingBox></LoadingBox>}
           </div>

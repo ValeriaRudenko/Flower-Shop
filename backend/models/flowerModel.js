@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-// Створення схеми для квітів
+const { Schema } = mongoose;
+
 const flowerSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, unique: true },

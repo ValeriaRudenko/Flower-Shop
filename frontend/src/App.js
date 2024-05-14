@@ -32,7 +32,7 @@ import FlowerEditScreen from "./screens/adminScreens/FlowerEditScreen";
 import OrderListScreen from "./screens/adminScreens/OrderListScreen";
 import UserListScreen from "./screens/UserListScreen";
 import UserEditScreen from "./screens/UserEditScreen";
-import BouquetsScreen from "./screens/flowerScreens/BouquetsScreen";
+import BouquetsScreen from "./BouquetsScreen";
 import CreateBouquetScreen from "./screens/flowerScreens/CreateBouquetScreen";
 import FlowerScreen from "./screens/flowerScreens/FlowerScreen";
 import PackingScreen from "./screens/PackingScreen";

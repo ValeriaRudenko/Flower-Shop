@@ -168,6 +168,8 @@ export default function FlowerScreen() {
                         </ListGroup.Item>
                         <ListGroup.Item>
                             Description : <p>{product.description}</p>
+                            Color: <p>{product.color}</p>
+                            Size: <p>{product.size}</p>
                         </ListGroup.Item>
                     </ListGroup>
                 </Col>

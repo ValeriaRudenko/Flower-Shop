@@ -225,7 +225,7 @@ export default function FlowerEditScreen() {
                             variant="outline-primary"
                             type="submit"
                         >
-                            Update
+                            Save
                         </Button>
                         {loadingUpdate && <LoadingBox></LoadingBox>}
                     </div>
