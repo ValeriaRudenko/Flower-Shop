@@ -1,11 +1,5 @@
 import axios from 'axios';
-import React, {
-    useContext,
-    useEffect,
-    useReducer,
-    useRef,
-    useState,
-} from 'react';
+import React, {useContext, useEffect, useReducer, useRef, useState,} from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -14,157 +8,119 @@ import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import Rating from '../components/Rating';
-import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
+import LoadingBox from '..//components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import { getError } from './utils';
-import { Store } from '../Store';
-import { toast } from 'react-toastify';
-import ProductPrice from "../components/Price";
+import {getError} from './utils';
+import {Store} from '../Store';
+import {toast} from 'react-toastify';
+import PackingPrice from "../components/Price";
+import {reducer} from "../components/reducers/Reducer";
 
-//reducer function for managing state
 
-const reducer = (state, action) => {
-    switch (action.type) {
-        case 'REFRESH_PRODUCT':
-            return { ...state, packing: action.payload };
-        case 'CREATE_REQUEST':
-            return { ...state, loadingCreateReview: true };
-        case 'CREATE_SUCCESS':
-            return { ...state, loadingCreateReview: false };
-        case 'CREATE_FAIL':
-            return { ...state, loadingCreateReview: false };
-        case 'FETCH_REQUEST':
-            return { ...state, loading: true };
-        case 'FETCH_SUCCESS':
-            return { ...state, packing: action.payload, loading: false };
-        case 'FETCH_FAIL':
-            return { ...state, loading: false, error: action.payload };
-        default:
-            return state;
-    }
-};
-// PackingScreen component
 export default function PackingScreen() {
-    // Creating a reference for reviews section
     let reviewsRef = useRef();
-    // State variables for rating, comment, and selected image
+
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [selectedImage, setSelectedImage] = useState('');
-    // Getting navigation function from React Router
+
     const navigate = useNavigate();
-    // Getting URL parameters from React Router
     const params = useParams();
-    // Destructuring URL parameters
     const { slug } = params;
-// Reducer for managing state related to packing screen
-    const [{ loading, error, packing, loadingCreateReview }, dispatch] =
+
+    const [{ loading, error, product, loadingCreateReview }, dispatch] =
         useReducer(reducer, {
-            packing: {},
+            product: [],
             loading: true,
             error: '',
         });
-    // Effect to fetch packing data from the server
     useEffect(() => {
         const fetchData = async () => {
-            // Dispatching fetch request action
             dispatch({ type: 'FETCH_REQUEST' });
             try {
-                // Fetching packing data
                 const result = await axios.get(`/api/packings/slug/${slug}`);
-                // Dispatching success action with data
                 dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+                console.log(result.data); // Log the reviews array
             } catch (error) {
-                // Dispatching fail action with error message
                 dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
             }
-            //setProducts(result.data);
+            //setPackings(result.data);
         };
-        // Calling fetch function
         fetchData();
-        // Dependency array with slug parameter
     }, [slug]);
-    // Accessing global state and dispatch function from Store context
+
     const { state, dispatch: ctxDispatch } = useContext(Store);
-    // Destructuring global state variables
     const { cart, userInfo } = state;
 
-    // Function to handle adding packing to cart
     const addToCartHandler = async () => {
-        // Checking if packing is already in cart
-        const itemExist = cart.cartItems.find((x) => x._id === packing._id);
-        // Incrementing quantity if already exists, otherwise setting it to 1
+        const itemExist = cart.cartItems.find((x) => x._id === product._id);
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
-        // Fetching packing data to check stock
-        const { data } = await axios.get(`/api/packings/${packing._id}`);
-        // Checking if stock is available
+        const { data } = await axios.get(`/api/packings/${product._id}`);
         if (data.countInStock < quantity) {
-            // Alerting user if out of stock
             window.alert('Sorry. This packing is out of stock');
             return;
         }
-        // Dispatching action to add item to cart
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: { ...packing, quantity },
+            payload: { ...product, quantity },
         });
-        // Redirecting to cart page
         navigate('/cart');
     };
-    // Function to handle review submission
+
     const submitHandler = async (e) => {
-        // Preventing default form submission behavior
         e.preventDefault();
-        // Checking if comment and rating are provided
         if (!comment || !rating) {
-            // Displaying error message if not provided
             toast.error('Please enter comment and rating');
             return;
         }
         try {
-            // Making POST request to create review
-            const { data } = await axios.post(
-                `/api/packings/${packing._id}/reviews`,
-                { rating, comment, name: userInfo.name },
+
+            const reviewData = {
+                rating: rating,
+                comment: comment,
+                name: userInfo.name, // Assuming userInfo contains user's name
+            };
+            const response = await axios.post(
+                `/api/packings/${product._id}/reviews`,
+                reviewData,
                 {
-                    headers: { Authorization: `Bearer ${userInfo.token}` },
+                    headers: {
+                        Authorization: `Bearer ${userInfo.token}`,
+                    },
                 }
             );
 
-            dispatch({
-                // Dispatching success action after review submission
-                type: 'CREATE_SUCCESS',
-            });
-            // Showing success toast notification
-            toast.success('Review submitted successfully');
-            // Adding newly created review to the packing reviews list
-            packing.reviews.unshift(data.review);
-            // Updating number of reviews
-            packing.numReviews = data.numReviews;
-            // Updating average rating
-            packing.rating = data.rating;
-            // Dispatching action to refresh packing data
-            dispatch({ type: 'REFRESH_FLOWER', payload: packing });
-            // Scrolling to reviews section
+            const { data } = response;
+            // Update local state with new review data
+            product.reviews.unshift(data.review);
+            product.numReviews = data.numReviews;
+            product.rating = data.rating;
+
+            // Dispatch actions to update state
+            dispatch({ type: 'CREATE_SUCCESS' });
+            dispatch({ type: 'REFRESH_PRODUCT', payload: product });
+
+
+            // Scroll to reviews section
             window.scrollTo({
                 behavior: 'smooth',
                 top: reviewsRef.current.offsetTop,
             });
+
+            toast.success('Review submitted successfully');
         } catch (error) {
-            // Displaying error toast notification if request fails
-            toast.error(getError(error));
-            // Dispatching fail action
+            // Handle errors
+            const errorMessage = getError(error);
+            toast.error(errorMessage);
             dispatch({ type: 'CREATE_FAIL' });
         }
     };
-// Returning loading component if data is still loading
+
     return loading ? (
         <LoadingBox />
     ) : error ? (
-        // Returning error message if data fetching fails
         <MessageBox variant="danger">{error}</MessageBox>
     ) : (
         <div>
@@ -172,29 +128,29 @@ export default function PackingScreen() {
                 <Col md={6}>
                     <img
                         className="img-large"
-                        src={selectedImage || packing.image}
-                        alt={packing.name}
+                        src={selectedImage || product.image}
+                        alt={product.name}
                     />
                 </Col>
                 <Col md={3}>
                     <ListGroup variant="flush">
                         <ListGroup.Item>
-                            <h2>{packing.name}</h2>
+                            <h2>{product.name}</h2>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Rating
-                                rating={packing.rating}
-                                numReviews={packing.numReviews}
+                                rating={product.rating}
+                                numReviews={product.numReviews}
                             ></Rating>
                         </ListGroup.Item>
                         <ListGroup.Item>
-                            <ProductPrice
-                                price={packing.price}
-                            ></ProductPrice>
+                            <PackingPrice
+                                price={product.price}
+                            ></PackingPrice>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <Row xs={1} md={2} className="g-2">
-                                {[packing.image, ...packing.images].map((x) => (
+                                {[product.image, ...product.images].map((x) => (
                                     <Col key={x}>
                                         <Card>
                                             <Button
@@ -203,18 +159,16 @@ export default function PackingScreen() {
                                                 variant="light"
                                                 onClick={() => setSelectedImage(x)}
                                             >
-                                                <Card.Img variant="top" src={x} alt="product" />
+                                                <Card.Img variant="top" src={x} alt="packing" />
                                             </Button>
                                         </Card>
                                     </Col>
                                 ))}
                             </Row>
                         </ListGroup.Item>
-                        {/*<ListGroup.Item>*/}
-                        {/*    Description : <p>{packing.description}</p>*/}
-                        {/*    Color: <p>{packing.color}</p>*/}
-                        {/*    Size: <p>{packing.size}</p>*/}
-                        {/*</ListGroup.Item>*/}
+                        <ListGroup.Item>
+                            Description : <p>{product.description}</p>
+                        </ListGroup.Item>
                     </ListGroup>
                 </Col>
                 <Col md={3}>
@@ -222,15 +176,15 @@ export default function PackingScreen() {
                         <Card.Body>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>
-                                    <ProductPrice
-                                        price={packing.price}
-                                    ></ProductPrice>
+                                    <PackingPrice
+                                        price={product.price}
+                                    ></PackingPrice>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     <Row>
                                         <Col>Status:</Col>
                                         <Col>
-                                            {packing.countInStock > 0 ? (
+                                            {product.countInStock > 0 ? (
                                                 <Badge bg="success">In Stock</Badge>
                                             ) : (
                                                 <Badge bg="danger">Not Available</Badge>
@@ -238,7 +192,7 @@ export default function PackingScreen() {
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>
-                                {packing.countInStock > 0 && (
+                                {product.countInStock > 0 && (
                                     <ListGroup.Item>
                                         <div className="d-grid">
                                             <Button
@@ -258,20 +212,21 @@ export default function PackingScreen() {
             <div className="my-3">
                 <h2 ref={reviewsRef}>Reviews</h2>
                 <div className="mb-3">
-                    {packing.reviews.length === 0 && (
+                    {product.reviews.length === 0 && (
                         <MessageBox>There is no review</MessageBox>
                     )}
                 </div>
                 <ListGroup>
-                    {packing.reviews.map((review) => (
+                    {product.reviews.map((review) => (
                         <ListGroup.Item key={review._id}>
                             <strong>{review.name}</strong>
                             <Rating rating={review.rating} caption=" "></Rating>
-                            <p>{review.createdAt.substring(0, 10)}</p>
+                            {review.createdAt && <p>{review.createdAt.substring(0, 10)}</p>}
                             <p>{review.comment}</p>
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
+
                 <div className="my-3">
                     {userInfo ? (
                         <form onSubmit={submitHandler}>
@@ -318,7 +273,7 @@ export default function PackingScreen() {
                     ) : (
                         <MessageBox>
                             Please{' '}
-                            <Link to={`/signin?redirect=/packing/${packing.slug}`}>
+                            <Link to={`/signin?redirect=/packing/${product.slug}`}>
                                 Sign In
                             </Link>{' '}
                             to write a review

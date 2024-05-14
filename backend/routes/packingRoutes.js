@@ -2,6 +2,7 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import Packing from '../models/packingModel.js';
+import Review from "../models/reviewModel.js";
 
 
 const packingRouter = express.Router();
@@ -108,42 +109,7 @@ packingRouter.get(
     })
 );
 
-// Add a review to a packing
-packingRouter.post(
-    '/:id/reviews',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-        const packingId = req.params.id;
-        const packing = await Packing.findById(packingId);
-        if (packing) {
-            if (packing.reviews.find((x) => x.name === req.user.name)) {
-                return res
-                    .status(400)
-                    .send({ message: 'You already submitted a review' });
-            }
 
-            const review = {
-                name: req.user.name,
-                rating: Number(req.body.rating),
-                comment: req.body.comment,
-            };
-            packing.reviews.push(review);
-            packing.numReviews = packing.reviews.length;
-            packing.rating =
-                packing.reviews.reduce((a, c) => c.rating + a, 0) /
-                packing.reviews.length;
-            const updatedPacking = await packing.save();
-            res.status(201).send({
-                message: 'Review Created',
-                review: updatedPacking.reviews[updatedPacking.reviews.length - 1],
-                numReviews: packing.numReviews,
-                rating: packing.rating,
-            });
-        } else {
-            res.status(404).send({ message: 'Packing Not Found' });
-        }
-    })
-);
 
 // Update a packing
 packingRouter.put(
@@ -214,13 +180,76 @@ packingRouter.get(
 );
 // Find packing by slug
 packingRouter.get('/slug/:slug', async (req, res) => {
-    const packing = await Packing.findOne({ slug: req.params.slug });
+    const packing = await Packing.findOne({ slug: req.params.slug }).populate('reviews');;
     if (packing) {
         res.send(packing);
     } else {
         res.status(404).send({ message: 'Packing Not Found' });
     }
 });
+packingRouter.post(
+    '/:id/reviews',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const packingId = req.params.id;
+        const packing = await Packing.findById(packingId);
+
+        if (packing) {
+            // Check if the user has already submitted a review
+            const existingReview = packing.reviews.find((review) => review.name === req.user.name);
+            if (existingReview) {
+                return res.status(400).send({ message: 'You already submitted a review' });
+            }
+
+            // Parse the rating from the request body as a number
+            const rating = Number(req.body.rating);
+
+            // Check if the rating is a valid number
+            if (isNaN(rating)) {
+                return res.status(400).send({ message: 'Invalid rating value' });
+            }
+
+            // Create a new Review document
+            const newReview = new Review({
+                product: packingId, // Set the packing reference
+                name: req.user.name,
+                rating: rating, // Assign the parsed rating
+                comment: req.body.comment,
+            });
+
+            // Save the new review to the database
+            await newReview.save();
+            // Update the packing's reviews array with the ObjectId reference
+            packing.reviews.push(newReview._id);
+
+            // Update packing's numReviews and rating fields
+            packing.numReviews = packing.reviews.length;
+            const totalRating = await packing.reviews.reduce(async (accPromise, reviewId) => {
+                const acc = await accPromise;
+                const review = await Review.findById(reviewId);
+                return acc + review.rating;
+            }, Promise.resolve(0));
+            packing.rating = totalRating / packing.reviews.length;
+
+            try {
+                await packing.save();
+                console.log('Packing updated successfully');
+            } catch (error) {
+                console.error('Error updating packing:', error);
+            }
+
+            // Send success response
+            res.status(201).send({
+                message: 'Review Created',
+                review: newReview,
+                numReviews: packing.numReviews,
+                rating: packing.rating,
+            });
+        } else {
+            res.status(404).send({ message: 'Packing Not Found' });
+        }
+    })
+);
 packingRouter.get(
     '/admin',
     isAuth,
