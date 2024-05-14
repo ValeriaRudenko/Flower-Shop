@@ -44,40 +44,40 @@ const reducer = (state, action) => {
 };
 
 // Array of price ranges
-const prices = [
-  {
-    name: '$1 to $50',
-    value: '1-50',
-  },
-  {
-    name: '$51 to $200',
-    value: '51-200',
-  },
-  {
-    name: '$201 to $1000',
-    value: '201-1000',
-  },
-];
+// const prices = [
+//   {
+//     name: '$1 to $50',
+//     value: '1-50',
+//   },
+//   {
+//     name: '$51 to $200',
+//     value: '51-200',
+//   },
+//   {
+//     name: '$201 to $1000',
+//     value: '201-1000',
+//   },
+// ];
 
 // Array of rating options
-export const ratings = [
-  {
-    name: '4stars & up',
-    rating: 4,
-  },
-  {
-    name: '3stars & up',
-    rating: 3,
-  },
-  {
-    name: '2stars & up',
-    rating: 2,
-  },
-  {
-    name: '1stars & up',
-    rating: 1,
-  },
-];
+// export const ratings = [
+//   {
+//     name: '4stars & up',
+//     rating: 4,
+//   },
+//   {
+//     name: '3stars & up',
+//     rating: 3,
+//   },
+//   {
+//     name: '2stars & up',
+//     rating: 2,
+//   },
+//   {
+//     name: '1stars & up',
+//     rating: 1,
+//   },
+// ];
 
 // Main component function for search screen
 export default function SearchScreen() {
@@ -151,59 +151,59 @@ export default function SearchScreen() {
           <Col md={3}>
 
             {/* Filter options for price */}
-            <div>
-              <h3>Price</h3>
-              <ul>
-                <li>
+            {/*<div>*/}
+              {/*<h3>Price</h3>*/}
+              {/*<ul>*/}
+              {/*  <li>*/}
                   {/* Link for all price ranges */}
-                  <Link
-                      className={'all' === price ? 'text-bold' : ''}
-                      to={getFilterUrl({ price: 'all' })}
-                  >
-                    Any
-                  </Link>
-                </li>
+                {/*  <Link*/}
+                {/*      className={'all' === price ? 'text-bold' : ''}*/}
+                {/*      to={getFilterUrl({ price: 'all' })}*/}
+                {/*  >*/}
+                {/*    Any*/}
+                {/*  </Link>*/}
+                {/*</li>*/}
                 {/* Mapping through price ranges */}
-                {prices.map((p) => (
-                    <li key={p.value}>
-                      {/* Link for each price range */}
-                      <Link
-                          to={getFilterUrl({ price: p.value })}
-                          className={p.value === price ? 'text-bold' : ''}
-                      >
-                        {p.name}
-                      </Link>
-                    </li>
-                ))}
-              </ul>
-            </div>
+                {/*{prices.map((p) => (*/}
+                {/*    <li key={p.value}>*/}
+                {/*      /!* Link for each price range *!/*/}
+                {/*      <Link*/}
+                {/*          to={getFilterUrl({ price: p.value })}*/}
+                {/*          className={p.value === price ? 'text-bold' : ''}*/}
+                {/*      >*/}
+                {/*        {p.name}*/}
+                {/*      </Link>*/}
+                {/*    </li>*/}
+                {/*))}*/}
+            {/*  </ul>*/}
+            {/*</div>*/}
             {/* Filter options for average customer review */}
-            <div>
-              <h3>Avg. Customer Review</h3>
-              <ul>
+            {/*<div>*/}
+            {/*  <h3>Avg. Customer Review</h3>*/}
+            {/*  <ul>*/}
                 {/* Mapping through rating options */}
-                {ratings.map((r) => (
-                    <li key={r.name}>
+                {/*{ratings.map((r) => (*/}
+                {/*    <li key={r.name}>*/}
                       {/* Link for each rating option */}
-                      <Link
-                          to={getFilterUrl({ rating: r.rating })}
-                          className={`${r.rating}` === `${rating}` ? 'text-bold' : ''}
-                      >
-                        <Rating caption={' & up'} rating={r.rating}></Rating>
-                      </Link>
-                    </li>
-                ))}
+                      {/*<Link*/}
+                      {/*    to={getFilterUrl({ rating: r.rating })}*/}
+                      {/*    className={`${r.rating}` === `${rating}` ? 'text-bold' : ''}*/}
+                      {/*>*/}
+                      {/*  <Rating caption={' & up'} rating={r.rating}></Rating>*/}
+                      {/*</Link>*/}
+                {/*    </li>*/}
+                {/*))}*/}
                 {/* Link for all ratings */}
-                <li>
-                  <Link
-                      to={getFilterUrl({ rating: 'all' })}
-                      className={rating === 'all' ? 'text-bold' : ''}
-                  >
-                    <Rating caption={' & up'} rating={0}></Rating>
-                  </Link>
-                </li>
-              </ul>
-            </div>
+                {/*<li>*/}
+                {/*  <Link*/}
+                {/*      to={getFilterUrl({ rating: 'all' })}*/}
+                {/*      className={rating === 'all' ? 'text-bold' : ''}*/}
+                {/*  >*/}
+                {/*    <Rating caption={' & up'} rating={0}></Rating>*/}
+                {/*  </Link>*/}
+                {/*</li>*/}
+            {/*  </ul>*/}
+            {/*</div>*/}
           </Col>
           {/* Column for displaying products */}
           <Col md={9}>
@@ -215,28 +215,28 @@ export default function SearchScreen() {
             ) : (
                 // Render products, filters, and pagination
                 <>
-                  <Row className="justify-content-between mb-3">
-                    <Col md={6}>
-                      <div>
+                  {/*<Row className="justify-content-between mb-3">*/}
+                  {/*  <Col md={6}>*/}
+                  {/*    <div>*/}
                         {/* Display number of results and applied filters */}
-                        {countProducts === 0 ? 'No' : countProducts} Results
-                        {query !== 'all' && ' : ' + query}
-                        {price !== 'all' && ' : Price ' + price}
-                        {rating !== 'all' && ' : Rating ' + rating + ' & up'}
-                        {/* Button to clear filters */}
-                        {query !== 'all' ||
-                        rating !== 'all' ||
-                        price !== 'all' ? (
-                            <Button
-                                variant="light"
-                                onClick={() => navigate('/search')}
-                            >
-                              <i className="fas fa-times-circle"></i>
-                            </Button>
-                        ) : null}
-                      </div>
-                    </Col>
-                  </Row>
+                    {/*    {countProducts === 0 ? 'No' : countProducts} Results*/}
+                    {/*    {query !== 'all' && ' : ' + query}*/}
+                    {/*    {price !== 'all' && ' : Price ' + price}*/}
+                    {/*    {rating !== 'all' && ' : Rating ' + rating + ' & up'}*/}
+                    {/*    /!* Button to clear filters *!/*/}
+                    {/*    {query !== 'all' ||*/}
+                    {/*    rating !== 'all' ||*/}
+                    {/*    price !== 'all' ? (*/}
+                    {/*        <Button*/}
+                    {/*            variant="light"*/}
+                    {/*            onClick={() => navigate('/search')}*/}
+                    {/*        >*/}
+                    {/*          <i className="fas fa-times-circle"></i>*/}
+                    {/*        </Button>*/}
+                    {/*    ) : null}*/}
+                    {/*  </div>*/}
+                    {/*</Col>*/}
+                  {/*</Row>*/}
                   {/* Display message if no products, flowers, or packings found */}
                   {products.length === 0 && (flowers === undefined || flowers.length === 0) && (packings === undefined || packings.length === 0) && (
                       <MessageBox>No Product Found</MessageBox>

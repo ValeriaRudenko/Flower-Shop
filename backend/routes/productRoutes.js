@@ -80,40 +80,65 @@ productRouter.put(
 );
 
 productRouter.post(
-  '/:id/reviews',
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
-    if (product) {
-      if (product.reviews.find((x) => x.name === req.user.name)) {
-        return res
-          .status(400)
-          .send({ message: 'You already submitted a review' });
-      }
+    '/:id/reviews',
+    isAuth,
+    expressAsyncHandler(async (req, res) => {
+        const productId = req.params.id;
+        const product = await Product.findById(productId);
+        if (product) {
+            // Check if the user has already submitted a review
+            const existingReview = product.reviews.find((review) => review.name === req.user.name);
+            if (existingReview) {
+                return res.status(400).send({ message: 'You already submitted a review' });
+            }
 
-      const review = {
-        name: req.user.name,
-        rating: Number(req.body.rating),
-        comment: req.body.comment,
-      };
-      product.reviews.push(review);
-      product.numReviews = product.reviews.length;
-      product.rating =
-        product.reviews.reduce((a, c) => c.rating + a, 0) /
-        product.reviews.length;
-      const updatedProduct = await product.save();
-      res.status(201).send({
-        message: 'Review Created',
-        review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
-        numReviews: product.numReviews,
-        rating: product.rating,
-      });
-    } else {
-      res.status(404).send({ message: 'Product Not Found' });
-    }
-  })
+            // Parse the rating from the request body as a number
+            const rating = Number(req.body.rating);
+
+            // Check if the rating is a valid number
+            if (isNaN(rating)) {
+                return res.status(400).send({ message: 'Invalid rating value' });
+            }
+
+            // Create a new Review document
+            const newReview = new Review({
+                product: productId, // Set the product reference
+                name: req.user.name,
+                rating: rating, // Assign the parsed rating
+                comment: req.body.comment,
+            });
+
+            // Save the new review to the database
+            await newReview.save();
+
+            // Update the product's reviews array with the ObjectId reference
+            product.reviews.push(newReview._id);
+
+            // Update product's numReviews and rating fields
+            product.numReviews = product.reviews.length;
+            const totalRating = product.reviews.reduce(async (total, reviewId) => {
+                const review = await Review.findById(reviewId);
+                return total + review.rating;
+            }, 0);
+            product.rating = totalRating / product.reviews.length;
+
+            // Save the updated product
+            await product.save();
+
+            // Send success response
+            res.status(201).send({
+                message: 'Review Created',
+                review: newReview,
+                numReviews: product.numReviews,
+                rating: product.rating,
+            });
+        } else {
+            res.status(404).send({ message: 'Product Not Found' });
+        }
+    })
 );
+
+
 
 productRouter.delete(
   '/:id',
@@ -130,7 +155,8 @@ productRouter.delete(
   })
 );
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 20;
+
 productRouter.get(
   '/search',
   expressAsyncHandler(async (req, res) => {

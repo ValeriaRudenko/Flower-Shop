@@ -42,13 +42,13 @@ export default function PlaceOrderScreen() {
   // Function to round a number to two decimal places
   const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100;
 
-  // Calculate prices for items, shipping, tax, and total
+  // Calculate prices for items, shipping,  and total
   cart.itemsPrice = round2(
       cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 0)
   );
   cart.shippingPrice = cart.itemsPrice > 100 ? round2(0) : round2(20);
-  cart.taxPrice = round2(0.0 * cart.itemsPrice);
-  cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
+
+  cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   // Function to handle placing an order
   const placeOrderHandler = async () => {
@@ -64,7 +64,6 @@ export default function PlaceOrderScreen() {
             paymentMethod: 'PayPal', // Set payment method to PayPal
             itemsPrice: cart.itemsPrice,
             shippingPrice: cart.shippingPrice,
-            taxPrice: cart.taxPrice,
             totalPrice: cart.totalPrice,
           },
           {
@@ -218,12 +217,6 @@ export default function PlaceOrderScreen() {
                     <Row>
                       <Col>Shipping</Col>
                       <Col>€ {cart.shippingPrice.toFixed(2)}</Col>
-                    </Row>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>Tax</Col>
-                      <Col>€ {cart.taxPrice.toFixed(2)}</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>

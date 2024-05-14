@@ -17,7 +17,6 @@ orderRouter.post(
             paymentMethod: req.body.paymentMethod, // Setting payment method
             itemsPrice: req.body.itemsPrice, // Setting total items price
             shippingPrice: req.body.shippingPrice, // Setting shipping price
-            taxPrice: req.body.taxPrice, // Setting tax price
             totalPrice: req.body.totalPrice, // Setting total price
             user: req.user._id, // Setting user ID from authenticated user
         });

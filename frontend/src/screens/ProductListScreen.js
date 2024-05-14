@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Store } from '../Store';
@@ -62,6 +62,7 @@ export default function ProductListScreen() {
       products,
       flowers,
       packings,
+      page,
       pages,
       loadingCreate,
       loadingDelete,
@@ -76,7 +77,7 @@ export default function ProductListScreen() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const page = sp.get('page') || 1;
+  const currentPage = sp.get('page') || 1;
 
   const { state } = useContext(Store);
   const { userInfo } = state;
@@ -85,24 +86,24 @@ export default function ProductListScreen() {
     const fetchData = async () => {
       try {
         console.log('Fetching products...');
-        const { data } = await axios.get(`/api/products/admin?page=${page}`, {
+        const { data } = await axios.get(`/api/products/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         console.log('Received products:', data);
 
         console.log('Fetching flowers...');
-        const { data: flowerData } = await axios.get(`/api/flowers/admin?page=${page}`, {
+        const { data: flowerData } = await axios.get(`/api/flowers/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         console.log('Received flowers:', flowerData);
 
         console.log('Fetching packings...');
-        const { data: packingData } = await axios.get(`/api/packings/admin?page=${page}`, {
+        const { data: packingData } = await axios.get(`/api/packings/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         console.log('Received packings:', packingData);
 
-        dispatch({ type: 'FETCH_SUCCESS', payload: { products: data.products, flowers: flowerData.flowers, packings: packingData.packings } });
+        dispatch({ type: 'FETCH_SUCCESS', payload: { products: data.products, flowers: flowerData.flowers, packings: packingData.packings, page: data.page, pages: data.pages } });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
@@ -112,7 +113,7 @@ export default function ProductListScreen() {
     } else {
       fetchData();
     }
-  }, [page, userInfo, successDelete]);
+  }, [currentPage, userInfo, successDelete]);
 
   const createHandler = async (type) => {
     const createUrl =
@@ -140,13 +141,21 @@ export default function ProductListScreen() {
     }
   };
 
-  const deleteHandler = async (product) => {
-    if (window.confirm('Are you sure to delete?')) {
+  const deleteHandler = async (type, id) => {
+    const deleteUrl =
+        type === 'product'
+            ? `/api/products/${id}`
+            : type === 'flower'
+                ? `/api/flowers/${id}`
+                : `/api/packings/${id}`;
+
+    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
       try {
-        await axios.delete(`/api/products/${product._id}`, {
+        dispatch({ type: 'DELETE_REQUEST' });
+        await axios.delete(deleteUrl, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        toast.success('product deleted successfully');
+        toast.success(`${type} deleted successfully`);
         dispatch({ type: 'DELETE_SUCCESS' });
       } catch (err) {
         toast.error(getError(err));
@@ -156,6 +165,7 @@ export default function ProductListScreen() {
       }
     }
   };
+
 
   return (
       <div>
@@ -215,7 +225,7 @@ export default function ProductListScreen() {
                         <Button
                             type="button"
                             variant="danger"
-                            onClick={() => deleteHandler(product)}
+                            onClick={() => deleteHandler('product', product._id)}
                         >
                           <i className="fas fa-trash"></i>
                         </Button>
@@ -241,10 +251,11 @@ export default function ProductListScreen() {
                         <Button
                             type="button"
                             variant="danger"
-                            onClick={() => deleteHandler(flower)}
+                            onClick={() => deleteHandler('flower', flower._id)} // Pass 'flower' as type and flower._id as id
                         >
                           <i className="fas fa-trash"></i>
                         </Button>
+
                       </td>
                     </tr>
                 ))}
@@ -262,11 +273,10 @@ export default function ProductListScreen() {
                         >
                           <i className="fas fa-edit"></i>
                         </Button>
-
                         <Button
                             type="button"
                             variant="danger"
-                            onClick={() => deleteHandler(packing)}
+                            onClick={() => deleteHandler('packing', packing._id)}
                         >
                           <i className="fas fa-trash"></i>
                         </Button>
@@ -282,7 +292,7 @@ export default function ProductListScreen() {
                     <Link
                         className={x + 1 === Number(page) ? 'btn text-bold' : 'btn'}
                         key={x + 1}
-                        to={`/admin/flowers?page=${x + 1}`}
+                        to={`/admin/products?page=${x + 1}`} // Changed to '/admin/products'
                     >
                       {x + 1}
                     </Link>

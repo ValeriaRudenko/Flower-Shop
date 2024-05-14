@@ -270,10 +270,7 @@ export default function OrderScreen() {
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Row>
-                    <Col>Tax</Col>
-                    <Col>€{order.taxPrice.toFixed(2)}</Col>
-                  </Row>
+
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>

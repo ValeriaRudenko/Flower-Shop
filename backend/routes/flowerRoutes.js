@@ -5,7 +5,7 @@ import { Flower } from '../models/flowerModel.js';
 import Product from "../models/productModel.js";
 import productRouter from "./productRoutes.js";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 20;
 
 const flowerRouter = express.Router();
 

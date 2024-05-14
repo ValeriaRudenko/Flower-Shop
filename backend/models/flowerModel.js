@@ -20,7 +20,5 @@ const flowerSchema = new mongoose.Schema(
 
 // Створення моделі для квітів на основі схеми
 const Flower = mongoose.model('Flower', flowerSchema);
-// const Package = mongoose.model('Package', packageSchema);
-// Експортування моделі квітів
 export { Flower };
 

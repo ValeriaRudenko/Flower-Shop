@@ -32,7 +32,7 @@ packingRouter.post(
     })
 );
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 20;
 
 // Search for packings
 packingRouter.get(
@@ -155,6 +155,7 @@ packingRouter.put(
             const packingId = req.params.id;
             const packing = await Packing.findById(packingId);
             if (packing) {
+                // Update the product details based on the request body
                 packing.name = req.body.typee || packing.name;
                 packing.price = req.body.price || packing.price;
                 packing.slug = req.body.slug || packing.slug;
@@ -163,7 +164,7 @@ packingRouter.put(
                 packing.countInStock = req.body.countInStock || packing.countInStock;
                 packing.rating = req.body.rating || packing.rating;
                 packing.numReviews = req.body.numReviews || packing.numReviews;
-
+                // Save the updated product details
                 const updatedPacking = await packing.save();
                 res.send({ message: 'Packing Updated', packing: updatedPacking });
             } else {

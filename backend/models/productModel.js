@@ -1,23 +1,23 @@
 import mongoose from 'mongoose';
 
-const productSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true, unique: true },
-    slug: { type: String, required: true, unique: true },
-    image: { type: String, required: true },
-    images: [String],
+const { Schema } = mongoose;
 
-
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    countInStock: { type: Number, required: true },
-    rating: { type: Number, required: true },
-    numReviews: { type: Number, required: true },
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
-  },
-  {
-    timestamps: true,
-  }
+const productSchema = new Schema(
+    {
+        name: { type: String, required: true, unique: true },
+        slug: { type: String, required: true, unique: true },
+        image: { type: String, required: true },
+        images: [String],
+        description: { type: String, required: true },
+        price: { type: Number, required: true },
+        countInStock: { type: Number, required: true },
+        rating: { type: String,required: true   }, // Not required, will be calculated from reviews
+        numReviews: { type: Number, required: true  }, // Not required, will be updated dynamically
+        reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
+    },
+    {
+        timestamps: true,
+    }
 );
 
 const Product = mongoose.model('Product', productSchema);
