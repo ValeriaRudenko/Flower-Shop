@@ -5,10 +5,10 @@ import Col from 'react-bootstrap/Col';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../../components/LoadingBox';
 import MessageBox from '../../components/MessageBox';
-import Flower from '../../components/Flower';
-import Packing from '../../components/Packing';
+
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import ProductCard from "../../components/ProductCard";
 
 // Reducer function to manage component state
 const reducer = (state, action) => {
@@ -124,9 +124,9 @@ export default function CreateBouquetScreen() {
                                 {filteredItems().slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => (
                                     <Col key={item.slug} sm={3} className="mb-3">
                                         {selectedCategory === 'flowers' ? (
-                                            <Flower flower={item} />
+                                            <ProductCard item={item} type={'flower'} />
                                         ) : (
-                                            <Packing packing={item} />
+                                            <ProductCard item={item} type={'packing'}/>
                                         )}
                                     </Col>
                                 ))}

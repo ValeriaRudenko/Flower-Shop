@@ -5,11 +5,12 @@ import Col from 'react-bootstrap/Col';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../../components/LoadingBox';
 import MessageBox from '../../components/MessageBox';
-import Product from '../../components/Product';
+import Product from '../../components/ProductCard';
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
 import {reducer} from "../../components/reducers/ReducerProducts";
+import ProductCard from "../../components/ProductCard";
 
 export default function BouquetsScreen() {
     const [{ loading, error, products }, dispatch] = useReducer(reducer, {
@@ -60,7 +61,7 @@ export default function BouquetsScreen() {
                         <Row>
                             {currentItems.map((product) => (
                                 <Col key={product.slug} sm={6} md={4} lg={3} className="mb-3">
-                                    <Product product={product}></Product>
+                                    <ProductCard item={product} type={'product'}></ProductCard>
                                 </Col>
                             ))}
                         </Row>
