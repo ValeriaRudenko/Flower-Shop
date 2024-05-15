@@ -41,7 +41,6 @@ export default function PackingScreen() {
             try {
                 const result = await axios.get(`/api/packings/slug/${slug}`);
                 dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-                console.log(result.data); // Log the reviews array
             } catch (error) {
                 dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
             }

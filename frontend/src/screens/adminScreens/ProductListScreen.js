@@ -89,20 +89,12 @@ export default function ProductListScreen() {
         const { data } = await axios.get(`/api/products/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        console.log('Received products:', data);
-
-        console.log('Fetching flowers...');
         const { data: flowerData } = await axios.get(`/api/flowers/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        console.log('Received flowers:', flowerData);
-
-        console.log('Fetching packings...');
         const { data: packingData } = await axios.get(`/api/packings/admin?page=${currentPage}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        console.log('Received packings:', packingData);
-
         dispatch({ type: 'FETCH_SUCCESS', payload: { products: data.products, flowers: flowerData.flowers, packings: packingData.packings, page: data.page, pages: data.pages } });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });

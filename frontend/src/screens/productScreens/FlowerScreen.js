@@ -42,8 +42,7 @@ export default function FlowerScreen() {
             try {
                 const result = await axios.get(`/api/flowers/slug/${slug}`);
                 dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-                console.log(result.data); // Log the reviews array
-            } catch (error) {
+                } catch (error) {
                 dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
             }
             //setFlowers(result.data);

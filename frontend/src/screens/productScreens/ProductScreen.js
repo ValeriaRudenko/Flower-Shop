@@ -126,9 +126,6 @@ export default function ProductScreen() {
     }
   };
 
-  // Console log all reviews
-  console.log('All reviews:', product.reviews);
-
   return loading ? (
       <LoadingBox />
   ) : error ? (
