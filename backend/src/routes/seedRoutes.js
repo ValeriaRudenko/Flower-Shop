@@ -7,16 +7,47 @@ import {Flower} from "../models/flowerModel.js";
 import Packing from '../models/packingModel.js';
 import Order from "../models/orderModel.js";
 
-const seedRouter = express.Router();
+import { faker } from '@faker-js/faker';
 
+const seedRouter = express.Router();
+const flowers = ['Rose', 'Tulip', 'Daisy', 'Sunflower', 'Orchid'];
+const colors = ['Red', 'Yellow', 'Blue', 'Pink', 'Purple'];
+const images = ['/images/p1.jpg', '/images/p2.jpg', '/images/p3.jpg', '/images/p4.jpg', '/images/p5.jpg', '/images/p6.jpg', '/images/p7.jpg', '/images/p8.jpg', '/images/p9.jpg', '/images/p10.jpg'];
+
+function getRandomFlowerWithColor() {
+  const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  return `${randomColor} ${randomFlower}`;
+}
+function flowerToSlug(name) {
+  const result = name.toLowerCase().replace(/\s+/g, '-');
+  return result+Math.floor(Math.random() * 999);
+}
 seedRouter.get('/', async (req, res) => {
   try {
+    let products = [];
+
+    for (let i = 0; i < 100; i++) {
+      const name = getRandomFlowerWithColor();
+      const product = {
+        name: name ,
+        slug: flowerToSlug(name),
+        description: faker.lorem.words(20),
+        price: faker.number.int({ min: 10, max: 200 }),
+        countInStock: faker.number.int(50),
+        rating: faker.number.float({ min: 1, max: 5, multipleOf: 0.1 }),
+        numReviews: faker.number.int(50),
+        image: images[Math.floor(Math.random() * images.length)]
+      };
+      products.push(product);
+    }
+
     // Remove existing products
     await Bouquet.deleteMany({});
 
     // Insert new products
-    const createdProducts = await Bouquet.insertMany(data.products);
-
+    // const createdProducts = await Bouquet.insertMany(data.products);
+    const createdProducts = await Bouquet.insertMany(products);
     // Remove existing flowers
     await Flower.deleteMany({});
 
@@ -45,6 +76,9 @@ seedRouter.get('/', async (req, res) => {
     console.error('Error seeding data:', error.message);
     res.status(500).send({ message: 'Error seeding data' });
   }
+
+
+
 });
 
 export default seedRouter;

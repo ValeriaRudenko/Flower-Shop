@@ -18,7 +18,7 @@ export default function BouquetsScreen() {
         error: '',
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(2); // Changed to display 6 items per page
+    const [itemsPerPage] = useState(20); // Changed to display 6 items per page
 
     useEffect(() => {
         const fetchData = async () => {
