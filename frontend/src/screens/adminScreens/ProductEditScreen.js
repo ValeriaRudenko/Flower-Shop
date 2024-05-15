@@ -59,6 +59,8 @@ export default function ProductEditScreen() {
   const [image, setImage] = useState('');
   const [countInStock, setCountInStock] = useState('');
   const [description, setDescription] = useState('');
+  const [size, setSize] = useState('');
+  const [color, setColor] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,6 +73,8 @@ export default function ProductEditScreen() {
         setImage(data.image);
         setCountInStock(data.countInStock);
         setDescription(data.description);
+        setSize(data.size || ''); // Set default value if size is undefined
+        setColor(data.color || ''); // Set default value if color is undefined
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (error) {
         dispatch({
@@ -96,6 +100,8 @@ export default function ProductEditScreen() {
             image,
             countInStock,
             description,
+            size,
+            color,
           },
           {
             headers: { Authorization: `Bearer ${userInfo.token}` },
@@ -130,92 +136,110 @@ export default function ProductEditScreen() {
       setImage(data);
       toast.success('Image uploaded successfully. click Update to apply it');
     } catch (err) {
-      toast.error(getError(err));
-      dispatch({ type: 'UPLOAD_FAIL', payload: getError(err) });
-    }
-  };
+    toast.error(getError(err));
+    dispatch({ type: 'UPLOAD_FAIL', payload: getError(err) });
+  }
+};
 
-  return (
-      <Container className="small-container">
-        <Helmet>
-          <title>Edit {id}</title>
-        </Helmet>
-        <h1>Edit {type.charAt(0).toUpperCase() + type.slice(1)} {id}</h1>
+return (
+    <Container className="small-container">
+      <Helmet>
+        <title>Edit {id}</title>
+      </Helmet>
+      <h1>Edit {type.charAt(0).toUpperCase() + type.slice(1)} {id}</h1>
 
-        {loading ? (
-            <LoadingBox></LoadingBox>
-        ) : error ? (
-            <MessageBox variant="danger">{error}</MessageBox>
-        ) : (
-            <Form onSubmit={submitHandler}>
-              <Form.Group className="mb-3" controlId="name">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="slug">
-                <Form.Label>Slug</Form.Label>
-                <Form.Control
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="price">
-                <Form.Label>Price</Form.Label>
-                <Form.Control
-                    type="number"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="image">
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="imageFile">
-                <Form.Label>Upload Image</Form.Label>
-                <Form.Control type="file" onChange={uploadFileHandler} />
-                {loadingUpload && <LoadingBox></LoadingBox>}
-              </Form.Group>
+      {loading ? (
+          <LoadingBox></LoadingBox>
+      ) : error ? (
+          <MessageBox variant="danger">{error}</MessageBox>
+      ) : (
+          <Form onSubmit={submitHandler}>
+            <Form.Group className="mb-3" controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="slug">
+              <Form.Label>Slug</Form.Label>
+              <Form.Control
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="price">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="image">
+              <Form.Label>Image URL</Form.Label>
+              <Form.Control
+                  value={image}
+                  onChange={(e) => setImage(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="imageFile">
+              <Form.Label>Upload Image</Form.Label>
+              <Form.Control type="file" onChange={uploadFileHandler} />
+              {loadingUpload && <LoadingBox></LoadingBox>}
+            </Form.Group>
 
-              <Form.Group className="mb-3" controlId="countInStock">
-                <Form.Label>Count In Stock</Form.Label>
-                <Form.Control
-                    type="number"
-                    value={countInStock}
-                    onChange={(e) => setCountInStock(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="description">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                />
-              </Form.Group>
-              <div className="mb-3">
-                <Button
-                    disabled={loadingUpdate}
-                    variant="outline-primary"
-              type="submit"
-            >
-              Save
-            </Button>
-            {loadingUpdate && <LoadingBox></LoadingBox>}
-          </div>
-        </Form>
+            <Form.Group className="mb-3" controlId="countInStock">
+              <Form.Label>Count In Stock</Form.Label>
+              <Form.Control
+                  type="number"
+                  value={countInStock}
+                  onChange={(e) => setCountInStock(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="description">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+              />
+            </Form.Group>
+            {/* Add Size Field */}
+            {type === 'flower' &&<Form.Group className="mb-3" controlId="size">
+              <Form.Label>Size</Form.Label>
+              <Form.Control
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  required
+              />
+            </Form.Group>}
+            {type === 'flower' &&<Form.Group className="mb-3" controlId="color">
+              <Form.Label>Color</Form.Label>
+              <Form.Control
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  required
+              />
+            </Form.Group>}
+            <div className="mb-3">
+              <Button
+                  disabled={loadingUpdate}
+                  variant="outline-primary"
+                  type="submit"
+              >
+                Save
+              </Button>
+              {loadingUpdate && <LoadingBox></LoadingBox>}
+            </div>
+          </Form>
       )}
     </Container>
-  );
+);
 }
+
