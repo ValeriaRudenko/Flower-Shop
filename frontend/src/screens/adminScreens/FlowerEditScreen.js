@@ -113,7 +113,7 @@ export default function FlowerEditScreen() {
                 type: 'UPDATE_SUCCESS',
             });
             toast.success('Flower updated successfully');
-            navigate('/admin/flowers');
+            navigate('/admin/products');
         } catch (err) {
             toast.error(getError(err));
             dispatch({ type: 'UPDATE_FAIL' });
@@ -124,6 +124,8 @@ export default function FlowerEditScreen() {
         const file = e.target.files[0];
         const bodyFormData = new FormData();
         bodyFormData.append('file', file);
+        bodyFormData.append('type', 'flower'); // Add request type
+        bodyFormData.append('id', flowerId); // Add product id
         try {
             dispatch({ type: 'UPLOAD_REQUEST' });
             const { data } = await axios.post('/api/upload', bodyFormData, {
@@ -134,11 +136,9 @@ export default function FlowerEditScreen() {
             });
             dispatch({ type: 'UPLOAD_SUCCESS' });
 
-            if (forImages) {
-                setImages([...images, data.secure_url]);
-            } else {
-                setImage(data.secure_url);
-            }
+
+            setImage(data);
+
             toast.success('Image uploaded successfully. click Update to apply it');
         } catch (err) {
             toast.error(getError(err));

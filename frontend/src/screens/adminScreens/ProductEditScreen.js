@@ -57,7 +57,6 @@ export default function ProductEditScreen() {
   const [slug, setSlug] = useState('');
   const [price, setPrice] = useState('');
   const [image, setImage] = useState('');
-  const [images, setImages] = useState([]);
   const [countInStock, setCountInStock] = useState('');
   const [description, setDescription] = useState('');
 
@@ -70,7 +69,6 @@ export default function ProductEditScreen() {
         setSlug(data.slug);
         setPrice(data.price);
         setImage(data.image);
-        setImages(data.images);
         setCountInStock(data.countInStock);
         setDescription(data.description);
         dispatch({ type: 'FETCH_SUCCESS' });
@@ -96,7 +94,6 @@ export default function ProductEditScreen() {
           slug,
           price,
           image,
-          images,
           countInStock,
           description,
         },
@@ -119,6 +116,8 @@ export default function ProductEditScreen() {
     const file = e.target.files[0];
     const bodyFormData = new FormData();
     bodyFormData.append('file', file);
+    bodyFormData.append('type', 'product'); // Add request type
+    bodyFormData.append('id', productId); // Add product id
     try {
       dispatch({ type: 'UPLOAD_REQUEST' });
       const { data } = await axios.post('/api/upload', bodyFormData, {
@@ -129,11 +128,9 @@ export default function ProductEditScreen() {
       });
       dispatch({ type: 'UPLOAD_SUCCESS' });
 
-      if (forImages) {
-        setImages([...images, data.secure_url]);
-      } else {
-        setImage(data.secure_url);
-      }
+
+      setImage(data);
+
       toast.success('Image uploaded successfully. click Update to apply it');
     } catch (err) {
       toast.error(getError(err));
@@ -142,9 +139,6 @@ export default function ProductEditScreen() {
   };
   const deleteFileHandler = async (fileName, f) => {
     console.log(fileName, f);
-    console.log(images);
-    console.log(images.filter((x) => x !== fileName));
-    setImages(images.filter((x) => x !== fileName));
     toast.success('Image removed successfully. click Update to apply it');
   };
 

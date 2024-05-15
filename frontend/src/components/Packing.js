@@ -48,7 +48,7 @@ console.log(packing.name)
     // Відображення компонента карточки упаковки
     return (
         <Card>
-            <Link to={`/packings/${packing.slug}`}>
+            <Link to={`/packing/${packing.slug}`}>
                 <ProductImage source={packing.image} className="card-img-top"  alt={packing.name} />
             </Link>
             <Card.Body>
