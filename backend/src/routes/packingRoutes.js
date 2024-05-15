@@ -1,6 +1,6 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { isAuth, isAdmin } from '../utils.js';
+import {isAdmin, isAuth} from '../utils.js';
 import Packing from '../models/packingModel.js';
 import Review from "../models/reviewModel.js";
 
@@ -29,7 +29,7 @@ packingRouter.post(
             numReviews: 0,
         });
         const packing = await newPacking.save();
-        res.send({ message: 'Packing Created', packing });
+        res.send({message: 'Packing Created', packing});
     })
 );
 
@@ -39,7 +39,7 @@ const PAGE_SIZE = 20;
 packingRouter.get(
     '/search',
     expressAsyncHandler(async (req, res) => {
-        const { query } = req;
+        const {query} = req;
         const pageSize = query.pageSize || PAGE_SIZE;
         const page = query.page || 1;
         const price = query.price || '';
@@ -75,16 +75,16 @@ packingRouter.get(
                 : {};
         const sortOrder =
             order === 'featured'
-                ? { featured: -1 }
+                ? {featured: -1}
                 : order === 'lowest'
-                    ? { price: 1 }
+                    ? {price: 1}
                     : order === 'highest'
-                        ? { price: -1 }
+                        ? {price: -1}
                         : order === 'toprated'
-                            ? { rating: -1 }
+                            ? {rating: -1}
                             : order === 'newest'
-                                ? { createdAt: -1 }
-                                : { _id: -1 };
+                                ? {createdAt: -1}
+                                : {_id: -1};
 
         const packings = await Packing.find({
             ...queryFilter,
@@ -110,7 +110,6 @@ packingRouter.get(
 );
 
 
-
 // Update a packing
 packingRouter.put(
     '/:id',
@@ -132,12 +131,12 @@ packingRouter.put(
                 packing.numReviews = req.body.numReviews || packing.numReviews;
                 // Save the updated product details
                 const updatedPacking = await packing.save();
-                res.send({ message: 'Packing Updated', packing: updatedPacking });
+                res.send({message: 'Packing Updated', packing: updatedPacking});
             } else {
-                res.status(404).send({ message: 'Packing Not Found' });
+                res.status(404).send({message: 'Packing Not Found'});
             }
         } catch (error) {
-            res.status(500).send({ message: 'Internal Server Error' });
+            res.status(500).send({message: 'Internal Server Error'});
         }
     })
 );
@@ -151,9 +150,9 @@ packingRouter.delete(
         const packing = await Packing.findById(req.params.id);
         if (packing) {
             await packing.remove();
-            res.send({ message: 'Packing Deleted' });
+            res.send({message: 'Packing Deleted'});
         } else {
-            res.status(404).send({ message: 'Packing Not Found' });
+            res.status(404).send({message: 'Packing Not Found'});
         }
     })
 );
@@ -162,7 +161,7 @@ packingRouter.get(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const { query } = req;
+        const {query} = req;
         const page = query.page || 1;
         const pageSize = query.pageSize || PAGE_SIZE;
 
@@ -180,11 +179,12 @@ packingRouter.get(
 );
 // Find packing by slug
 packingRouter.get('/slug/:slug', async (req, res) => {
-    const packing = await Packing.findOne({ slug: req.params.slug }).populate('reviews');;
+    const packing = await Packing.findOne({slug: req.params.slug}).populate('reviews');
+
     if (packing) {
         res.send(packing);
     } else {
-        res.status(404).send({ message: 'Packing Not Found' });
+        res.status(404).send({message: 'Packing Not Found'});
     }
 });
 packingRouter.post(
@@ -198,7 +198,7 @@ packingRouter.post(
             // Check if the user has already submitted a review
             const existingReview = packing.reviews.find((review) => review.name === req.user.name);
             if (existingReview) {
-                return res.status(400).send({ message: 'You already submitted a review' });
+                return res.status(400).send({message: 'You already submitted a review'});
             }
 
             // Parse the rating from the request body as a number
@@ -206,7 +206,7 @@ packingRouter.post(
 
             // Check if the rating is a valid number
             if (isNaN(rating)) {
-                return res.status(400).send({ message: 'Invalid rating value' });
+                return res.status(400).send({message: 'Invalid rating value'});
             }
 
             // Create a new Review document
@@ -246,7 +246,7 @@ packingRouter.post(
                 rating: packing.rating,
             });
         } else {
-            res.status(404).send({ message: 'Packing Not Found' });
+            res.status(404).send({message: 'Packing Not Found'});
         }
     })
 );
@@ -255,7 +255,7 @@ packingRouter.get(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const { query } = req;
+        const {query} = req;
         const page = query.page || 1;
         const pageSize = query.pageSize || PAGE_SIZE;
 
@@ -277,7 +277,7 @@ packingRouter.get('/:id', async (req, res) => {
     if (packing) {
         res.send(packing);
     } else {
-        res.status(404).send({ message: 'Packing Not Found' });
+        res.status(404).send({message: 'Packing Not Found'});
     }
 });
 

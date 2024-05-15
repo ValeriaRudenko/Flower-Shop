@@ -27,9 +27,9 @@ export default function PackingScreen() {
     const [comment, setComment] = useState('');
     const navigate = useNavigate();
     const params = useParams();
-    const { slug } = params;
+    const {slug} = params;
 
-    const [{ loading, error, product, loadingCreateReview }, dispatch] =
+    const [{loading, error, product, loadingCreateReview}, dispatch] =
         useReducer(reducer, {
             product: [],
             loading: true,
@@ -37,32 +37,32 @@ export default function PackingScreen() {
         });
     useEffect(() => {
         const fetchData = async () => {
-            dispatch({ type: 'FETCH_REQUEST' });
+            dispatch({type: 'FETCH_REQUEST'});
             try {
                 const result = await axios.get(`/api/packings/slug/${slug}`);
-                dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+                dispatch({type: 'FETCH_SUCCESS', payload: result.data});
             } catch (error) {
-                dispatch({ type: 'FETCH_FAIL', payload: getError(error) });
+                dispatch({type: 'FETCH_FAIL', payload: getError(error)});
             }
             //setPackings(result.data);
         };
         fetchData();
     }, [slug]);
 
-    const { state, dispatch: ctxDispatch } = useContext(Store);
-    const { cart, userInfo } = state;
+    const {state, dispatch: ctxDispatch} = useContext(Store);
+    const {cart, userInfo} = state;
 
     const addToCartHandler = async () => {
         const itemExist = cart.cartItems.find((x) => x._id === product._id);
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
-        const { data } = await axios.get(`/api/packings/${product._id}`);
+        const {data} = await axios.get(`/api/packings/${product._id}`);
         if (data.countInStock < quantity) {
             window.alert('Sorry. This packing is out of stock');
             return;
         }
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: { ...product, quantity },
+            payload: {...product, quantity},
         });
         navigate('/cart');
     };
@@ -90,15 +90,15 @@ export default function PackingScreen() {
                 }
             );
 
-            const { data } = response;
+            const {data} = response;
             // Update local state with new review data
             product.reviews.unshift(data.review);
             product.numReviews = data.numReviews;
             product.rating = data.rating;
 
             // Dispatch actions to update state
-            dispatch({ type: 'CREATE_SUCCESS' });
-            dispatch({ type: 'REFRESH_PRODUCT', payload: product });
+            dispatch({type: 'CREATE_SUCCESS'});
+            dispatch({type: 'REFRESH_PRODUCT', payload: product});
 
 
             // Scroll to reviews section
@@ -112,12 +112,12 @@ export default function PackingScreen() {
             // Handle errors
             const errorMessage = getError(error);
             toast.error(errorMessage);
-            dispatch({ type: 'CREATE_FAIL' });
+            dispatch({type: 'CREATE_FAIL'});
         }
     };
 
     return loading ? (
-        <LoadingBox />
+        <LoadingBox/>
     ) : error ? (
         <MessageBox variant="danger">{error}</MessageBox>
     ) : (

@@ -1,7 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import { isAuth, isAdmin } from '../utils.js';
-import { Flower } from '../models/flowerModel.js';
+import {isAdmin, isAuth} from '../utils.js';
+import {Flower} from '../models/flowerModel.js';
 import Review from "../models/reviewModel.js";
 
 const PAGE_SIZE = 20;
@@ -20,7 +20,7 @@ flowerRouter.get(
     isAuth,
     isAdmin,
     expressAsyncHandler(async (req, res) => {
-        const { query } = req;
+        const {query} = req;
         const page = query.page || 1;
         const pageSize = query.pageSize || PAGE_SIZE;
 
@@ -41,7 +41,7 @@ flowerRouter.get(
 flowerRouter.get(
     '/search',
     expressAsyncHandler(async (req, res) => {
-        const { query } = req;
+        const {query} = req;
         const pageSize = query.pageSize || PAGE_SIZE;
         const page = query.page || 1;
         const price = query.price || '';
@@ -77,16 +77,16 @@ flowerRouter.get(
                 : {};
         const sortOrder =
             order === 'featured'
-                ? { featured: -1 }
+                ? {featured: -1}
                 : order === 'lowest'
-                    ? { price: 1 }
+                    ? {price: 1}
                     : order === 'highest'
-                        ? { price: -1 }
+                        ? {price: -1}
                         : order === 'toprated'
-                            ? { rating: -1 }
+                            ? {rating: -1}
                             : order === 'newest'
-                                ? { createdAt: -1 }
-                                : { _id: -1 };
+                                ? {createdAt: -1}
+                                : {_id: -1};
 
         const flowers = await Flower.find({
             ...queryFilter,
@@ -121,7 +121,7 @@ flowerRouter.post(
             // Check if the user has already submitted a review
             const existingReview = flower.reviews.find((review) => review.name === req.user.name);
             if (existingReview) {
-                return res.status(400).send({ message: 'You already submitted a review' });
+                return res.status(400).send({message: 'You already submitted a review'});
             }
 
             // Parse the rating from the request body as a number
@@ -129,7 +129,7 @@ flowerRouter.post(
 
             // Check if the rating is a valid number
             if (isNaN(rating)) {
-                return res.status(400).send({ message: 'Invalid rating value' });
+                return res.status(400).send({message: 'Invalid rating value'});
             }
 
             // Create a new Review document
@@ -169,7 +169,7 @@ flowerRouter.post(
                 rating: flower.rating,
             });
         } else {
-            res.status(404).send({ message: 'Flower Not Found' });
+            res.status(404).send({message: 'Flower Not Found'});
         }
     })
 );
@@ -195,7 +195,7 @@ flowerRouter.post(
             description: 'sample description',
         });
         const flower = await newFlower.save();
-        res.send({ message: 'Flower Created', flower });
+        res.send({message: 'Flower Created', flower});
     })
 );
 
@@ -221,9 +221,9 @@ flowerRouter.put(
             flower.numReviews = req.body.numReviews || flower.numReviews;
 
             const updatedFlower = await flower.save();
-            res.send({ message: 'Flower Updated', flower: updatedFlower });
+            res.send({message: 'Flower Updated', flower: updatedFlower});
         } else {
-            res.status(404).send({ message: 'Flower Not Found' });
+            res.status(404).send({message: 'Flower Not Found'});
         }
     })
 );
@@ -237,20 +237,20 @@ flowerRouter.delete(
         const flower = await Flower.findById(req.params.id);
         if (flower) {
             await flower.remove();
-            res.send({ message: 'Flower Deleted' });
+            res.send({message: 'Flower Deleted'});
         } else {
-            res.status(404).send({ message: 'Flower Not Found' });
+            res.status(404).send({message: 'Flower Not Found'});
         }
     })
 );
 
 // Fetch a flower by slug
 flowerRouter.get('/slug/:slug', async (req, res) => {
-    const flower = await Flower.findOne({ slug: req.params.slug }).populate('reviews');
+    const flower = await Flower.findOne({slug: req.params.slug}).populate('reviews');
     if (flower) {
         res.send(flower);
     } else {
-        res.status(404).send({ message: 'Flower Not Found' });
+        res.status(404).send({message: 'Flower Not Found'});
     }
 });
 
@@ -260,7 +260,7 @@ flowerRouter.get('/:id', async (req, res) => {
     if (flower) {
         res.send(flower);
     } else {
-        res.status(404).send({ message: 'Flower Not Found' });
+        res.status(404).send({message: 'Flower Not Found'});
     }
 });
 

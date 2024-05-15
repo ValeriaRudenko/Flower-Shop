@@ -3,7 +3,7 @@ import React from 'react';
 class ProductImage extends React.Component {
 
     render() {
-        const { source, alt } = this.props;
+        const {source, alt} = this.props;
         const backendUrl = 'http://localhost:5000'; // Backend URL
         const src = `${backendUrl}${source}`
         return (

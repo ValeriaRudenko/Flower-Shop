@@ -10,7 +10,6 @@ import Packing from "../models/packingModel.js";
 const uploadRouter = express.Router();
 
 
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/images');
@@ -22,7 +21,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({storage: storage});
 
 uploadRouter.post('/',
     isAuth,
@@ -35,8 +34,8 @@ uploadRouter.post('/',
             }
 
             // Get file information
-            const { filename } = req.file;
-            const { type, id } = req.body;
+            const {filename} = req.file;
+            const {type, id} = req.body;
 
             // Construct the file URL
             const fileUrl = `/images/${filename}`;
@@ -46,13 +45,13 @@ uploadRouter.post('/',
 
             if (type === 'product') {
                 // Update product image
-                updatedEntity = await Bouquet.findByIdAndUpdate(id, { image: fileUrl }, { new: true });
+                updatedEntity = await Bouquet.findByIdAndUpdate(id, {image: fileUrl}, {new: true});
             } else if (type === 'flower') {
                 // Update flower image
-                updatedEntity = await Flower.findByIdAndUpdate(id, { image: fileUrl }, { new: true });
+                updatedEntity = await Flower.findByIdAndUpdate(id, {image: fileUrl}, {new: true});
             } else if (type === 'packing') {
                 // Update package image
-                updatedEntity = await Packing.findByIdAndUpdate(id, { image: fileUrl }, { new: true });
+                updatedEntity = await Packing.findByIdAndUpdate(id, {image: fileUrl}, {new: true});
             } else {
                 return res.status(400).send('Invalid type specified.');
             }

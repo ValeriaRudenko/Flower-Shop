@@ -1,19 +1,18 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, {useEffect, useReducer, useState} from 'react';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Helmet } from 'react-helmet-async';
+import {Helmet} from 'react-helmet-async';
 import LoadingBox from '../../components/LoadingBox';
 import MessageBox from '../../components/MessageBox';
-import Product from '../../components/ProductCard';
+import ProductCard from '../../components/ProductCard';
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 
 import {reducer} from "../../components/reducers/ReducerProducts";
-import ProductCard from "../../components/ProductCard";
 
 export default function BouquetsScreen() {
-    const [{ loading, error, products }, dispatch] = useReducer(reducer, {
+    const [{loading, error, products}, dispatch] = useReducer(reducer, {
         products: [],
         loading: true,
         error: '',
@@ -23,12 +22,12 @@ export default function BouquetsScreen() {
 
     useEffect(() => {
         const fetchData = async () => {
-            dispatch({ type: 'FETCH_REQUEST' });
+            dispatch({type: 'FETCH_REQUEST'});
             try {
                 const result = await axios.get('/api/products');
-                dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+                dispatch({type: 'FETCH_SUCCESS', payload: result.data});
             } catch (error) {
-                dispatch({ type: 'FETCH_FAIL', payload: error.message });
+                dispatch({type: 'FETCH_FAIL', payload: error.message});
             }
         };
         fetchData();
@@ -71,11 +70,12 @@ export default function BouquetsScreen() {
                         {products.length > itemsPerPage && (
                             <div className="pagination-list">
                                 <div className="page-item">
-                                    <Button variant="link" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className="page-link">
+                                    <Button variant="link" onClick={() => paginate(currentPage - 1)}
+                                            disabled={currentPage === 1} className="page-link">
                                         Previous
                                     </Button>
                                 </div>
-                                {Array.from({ length: Math.ceil(products.length / itemsPerPage) }, (_, i) => (
+                                {Array.from({length: Math.ceil(products.length / itemsPerPage)}, (_, i) => (
                                     <div key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
                                         <Button variant="link" onClick={() => paginate(i + 1)} className="page-link">
                                             {i + 1}
@@ -83,7 +83,9 @@ export default function BouquetsScreen() {
                                     </div>
                                 ))}
                                 <div className="page-item">
-                                    <Button variant="link" onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(products.length / itemsPerPage)} className="page-link">
+                                    <Button variant="link" onClick={() => paginate(currentPage + 1)}
+                                            disabled={currentPage === Math.ceil(products.length / itemsPerPage)}
+                                            className="page-link">
                                         Next
                                     </Button>
                                 </div>

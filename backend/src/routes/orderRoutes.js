@@ -2,8 +2,7 @@ import express from 'express'; // Importing express library
 import expressAsyncHandler from 'express-async-handler'; // Importing expressAsyncHandler for handling async functions
 import Order from '../models/orderModel.js'; // Importing Order model
 import User from '../models/userModel.js'; // Importing User model
-import Bouquet from '../models/bouquetModel.js'; // Importing Product model
-import { isAuth, isAdmin } from '../utils.js'; // Importing authentication middleware functions
+import {isAdmin, isAuth} from '../utils.js'; // Importing authentication middleware functions
 
 const orderRouter = express.Router(); // Creating a new router instance
 
@@ -12,7 +11,7 @@ orderRouter.post(
     isAuth, // Middleware to authenticate user
     expressAsyncHandler(async (req, res) => { // Handling asynchronous request
         const newOrder = new Order({ // Creating a new Order instance
-            orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })), // Mapping order items with product IDs
+            orderItems: req.body.orderItems.map((x) => ({...x, product: x._id})), // Mapping order items with product IDs
             shippingAddress: req.body.shippingAddress, // Setting shipping address
             paymentMethod: req.body.paymentMethod, // Setting payment method
             itemsPrice: req.body.itemsPrice, // Setting total items price
@@ -22,7 +21,7 @@ orderRouter.post(
         });
 
         const order = await newOrder.save(); // Saving the new order to database
-        res.status(201).send({ message: 'New Order Created', order }); // Sending success response with new order
+        res.status(201).send({message: 'New Order Created', order}); // Sending success response with new order
     })
 );
 
@@ -45,9 +44,9 @@ orderRouter.put(
             order.isDelivered = true; // Updating isDelivered field to true
             order.deliveredAt = Date.now(); // Setting deliveredAt date
             await order.save(); // Saving the updated order
-            res.send({ message: 'Order Delivered' }); // Sending success response
+            res.send({message: 'Order Delivered'}); // Sending success response
         } else {
-            res.status(404).send({ message: 'Order Not Found' }); // Sending error response if order not found
+            res.status(404).send({message: 'Order Not Found'}); // Sending error response if order not found
         }
     })
 );
@@ -60,9 +59,9 @@ orderRouter.delete(
         const order = await Order.findById(req.params.id); // Finding order by ID
         if (order) { // If order is found
             await order.remove(); // Removing the order from database
-            res.send({ message: 'Order Deleted' }); // Sending success response
+            res.send({message: 'Order Deleted'}); // Sending success response
         } else {
-            res.status(404).send({ message: 'Order Not Found' }); // Sending error response if order not found
+            res.status(404).send({message: 'Order Not Found'}); // Sending error response if order not found
         }
     })
 );
@@ -76,8 +75,8 @@ orderRouter.get(
             {
                 $group: { // Grouping orders
                     _id: null, // Grouping all orders
-                    numOrders: { $sum: 1 }, // Counting total number of orders
-                    totalSales: { $sum: '$totalPrice' }, // Calculating total sales
+                    numOrders: {$sum: 1}, // Counting total number of orders
+                    totalSales: {$sum: '$totalPrice'}, // Calculating total sales
                 },
             },
         ]);
@@ -85,22 +84,22 @@ orderRouter.get(
             {
                 $group: { // Grouping users
                     _id: null, // Grouping all users
-                    numUsers: { $sum: 1 }, // Counting total number of users
+                    numUsers: {$sum: 1}, // Counting total number of users
                 },
             },
         ]);
         const dailyOrders = await Order.aggregate([ // Aggregating daily order data
             {
                 $group: { // Grouping orders
-                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, // Grouping by date
-                    orders: { $sum: 1 }, // Counting total orders
-                    sales: { $sum: '$totalPrice' }, // Calculating total sales
+                    _id: {$dateToString: {format: '%Y-%m-%d', date: '$createdAt'}}, // Grouping by date
+                    orders: {$sum: 1}, // Counting total orders
+                    sales: {$sum: '$totalPrice'}, // Calculating total sales
                 },
             },
-            { $sort: { _id: 1 } }, // Sorting results by date
+            {$sort: {_id: 1}}, // Sorting results by date
         ]);
 
-        res.send({ users, orders, dailyOrders }); // Sending summary data as response
+        res.send({users, orders, dailyOrders}); // Sending summary data as response
     })
 );
 
@@ -108,7 +107,7 @@ orderRouter.get(
     '/mine', // GET route for retrieving orders of logged-in user
     isAuth, // Middleware to authenticate user
     expressAsyncHandler(async (req, res) => { // Handling asynchronous request
-        const orders = await Order.find({ user: req.user._id }); // Finding orders by user ID
+        const orders = await Order.find({user: req.user._id}); // Finding orders by user ID
         res.send(orders); // Sending retrieved orders as response
     })
 );
@@ -121,7 +120,7 @@ orderRouter.get(
         if (order) { // If order is found
             res.send(order); // Sending retrieved order as response
         } else {
-            res.status(404).send({ message: 'Order Not Found' }); // Sending error response if order not found
+            res.status(404).send({message: 'Order Not Found'}); // Sending error response if order not found
         }
     })
 );
@@ -146,9 +145,9 @@ orderRouter.put(
 
             const updatedOrder = await order.save(); // Saving the updated order
 
-            res.send({ message: 'Order Paid', order: updatedOrder }); // Sending success response with updated order
+            res.send({message: 'Order Paid', order: updatedOrder}); // Sending success response with updated order
         } else {
-            res.status(404).send({ message: 'Order Not Found' }); // Sending error response if order not found
+            res.status(404).send({message: 'Order Not Found'}); // Sending error response if order not found
         }
     })
 );
