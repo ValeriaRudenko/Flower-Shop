@@ -24,7 +24,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import ProductListScreen from "./screens/adminScreens/ProductListScreen";
 import ProductEditScreen from "./screens/adminScreens/ProductEditScreen";
-import FlowerEditScreen from "./screens/adminScreens/FlowerEditScreen";
 import OrderListScreen from "./screens/adminScreens/OrderListScreen";
 import UserListScreen from "./screens/adminScreens/UserListScreen";
 import UserEditScreen from "./screens/adminScreens/UserEditScreen";
@@ -32,7 +31,6 @@ import BouquetsScreen from "./screens/productScreens/BouquetsScreen";
 import CreateBouquetScreen from "./screens/productScreens/CreateBouquetScreen";
 import FlowerScreen from "./screens/productScreens/FlowerScreen";
 import PackingScreen from "./screens/productScreens/PackingScreen";
-import PackingEditScreen from "./screens/adminScreens/PackingEditScreen";
 
 function App() {
     // Accessing global state and dispatch function from Store context
@@ -188,29 +186,13 @@ function App() {
                 ></Route>
 
                 <Route
-                    path="/admin/product/:id"
+                    path="/admin/edit/:type/:id"
                     element={
                       <AdminRoute>
                         <ProductEditScreen/>
                       </AdminRoute>
                     }
                 ></Route>
-                  <Route
-                      path="/admin/flower/:id"
-                      element={
-                          <AdminRoute>
-                              <FlowerEditScreen/>
-                          </AdminRoute>
-                      }
-                  ></Route>
-                  <Route
-                      path="/admin/packing/:id"
-                      element={
-                          <AdminRoute>
-                              <PackingEditScreen/>
-                          </AdminRoute>
-                      }
-                  ></Route>
                 <Route
                     path="/admin/orders"
                     element={

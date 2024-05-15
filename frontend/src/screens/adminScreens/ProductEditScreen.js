@@ -5,7 +5,6 @@ import { Store } from '../../Store';
 import { getError } from '../utils';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../../components/LoadingBox';
 import MessageBox from '../../components/MessageBox';
@@ -40,19 +39,20 @@ const reducer = (state, action) => {
       return state;
   }
 };
+
 export default function ProductEditScreen() {
   const navigate = useNavigate();
-  const params = useParams(); // /product/:id
-  const { id: productId } = params;
+  const params = useParams(); // /:type/:id
+  const { type, id } = params;
 
   const { state } = useContext(Store);
   const { userInfo } = state;
 
   const [{ loading, error, loadingUpdate, loadingUpload }, dispatch] =
-    useReducer(reducer, {
-      loading: true,
-      error: '',
-    });
+      useReducer(reducer, {
+        loading: true,
+        error: '',
+      });
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [price, setPrice] = useState('');
@@ -64,7 +64,7 @@ export default function ProductEditScreen() {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/products/${productId}`);
+        const { data } = await axios.get(`/api/${type}s/${id}`);
         setName(data.name);
         setSlug(data.slug);
         setPrice(data.price);
@@ -80,31 +80,31 @@ export default function ProductEditScreen() {
       }
     };
     fetchData();
-  }, [productId]);
+  }, [type, id]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
       dispatch({ type: 'UPDATE_REQUEST' });
       await axios.put(
-        `/api/products/${productId}`,
-        {
-          _id: productId,
-          name,
-          slug,
-          price,
-          image,
-          countInStock,
-          description,
-        },
-        {
-          headers: { Authorization: `Bearer ${userInfo.token}` },
-        }
+          `/api/${type}s/${id}`,
+          {
+            _id: id,
+            name,
+            slug,
+            price,
+            image,
+            countInStock,
+            description,
+          },
+          {
+            headers: { Authorization: `Bearer ${userInfo.token}` },
+          }
       );
       dispatch({
         type: 'UPDATE_SUCCESS',
       });
-      toast.success('Product updated successfully');
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`);
       navigate('/admin/products');
     } catch (err) {
       toast.error(getError(err));
@@ -112,12 +112,12 @@ export default function ProductEditScreen() {
     }
   };
 
-  const uploadFileHandler = async (e, forImages) => {
+  const uploadFileHandler = async (e) => {
     const file = e.target.files[0];
     const bodyFormData = new FormData();
     bodyFormData.append('file', file);
-    bodyFormData.append('type', 'product'); // Add request type
-    bodyFormData.append('id', productId); // Add product id
+    bodyFormData.append('type', type); // Add request type
+    bodyFormData.append('id', id); // Add product id
     try {
       dispatch({ type: 'UPLOAD_REQUEST' });
       const { data } = await axios.post('/api/upload', bodyFormData, {
@@ -127,93 +127,87 @@ export default function ProductEditScreen() {
         },
       });
       dispatch({ type: 'UPLOAD_SUCCESS' });
-
-
       setImage(data);
-
       toast.success('Image uploaded successfully. click Update to apply it');
     } catch (err) {
       toast.error(getError(err));
       dispatch({ type: 'UPLOAD_FAIL', payload: getError(err) });
     }
   };
-  const deleteFileHandler = async (fileName, f) => {
-    console.log(fileName, f);
-    toast.success('Image removed successfully. click Update to apply it');
-  };
 
   return (
-    <Container className="small-container">
-      <Helmet>
-        <title>Edit Product ${productId}</title>
-      </Helmet>
-      <h1>Edit Product {productId}</h1>
+      <Container className="small-container">
+        <Helmet>
+          <title>Edit {id}</title>
+        </Helmet>
+        <h1>Edit {type.charAt(0).toUpperCase() + type.slice(1)} {id}</h1>
 
-      {loading ? (
-        <LoadingBox></LoadingBox>
-      ) : error ? (
-        <MessageBox variant="danger">{error}</MessageBox>
-      ) : (
-        <Form onSubmit={submitHandler}>
-          <Form.Group className="mb-3" controlId="name">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="slug">
-            <Form.Label>Slug</Form.Label>
-            <Form.Control
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="name">
-            <Form.Label>Price</Form.Label>
-            <Form.Control
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="image">
-            <Form.Label>Image File</Form.Label>
-            <Form.Control
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="imageFile">
-            <Form.Label>Upload Image</Form.Label>
-            <Form.Control type="file" onChange={uploadFileHandler} />
-            {loadingUpload && <LoadingBox></LoadingBox>}
-          </Form.Group>
+        {loading ? (
+            <LoadingBox></LoadingBox>
+        ) : error ? (
+            <MessageBox variant="danger">{error}</MessageBox>
+        ) : (
+            <Form onSubmit={submitHandler}>
+              <Form.Group className="mb-3" controlId="name">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="slug">
+                <Form.Label>Slug</Form.Label>
+                <Form.Control
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="price">
+                <Form.Label>Price</Form.Label>
+                <Form.Control
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="image">
+                <Form.Label>Image URL</Form.Label>
+                <Form.Control
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="imageFile">
+                <Form.Label>Upload Image</Form.Label>
+                <Form.Control type="file" onChange={uploadFileHandler} />
+                {loadingUpload && <LoadingBox></LoadingBox>}
+              </Form.Group>
 
-
-          <Form.Group className="mb-3" controlId="countInStock">
-            <Form.Label>Count In Stock</Form.Label>
-            <Form.Control
-              value={countInStock}
-              onChange={(e) => setCountInStock(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="description">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <div className="mb-3">
-            <Button
-              disabled={loadingUpdate}
-              variant="outline-primary"
+              <Form.Group className="mb-3" controlId="countInStock">
+                <Form.Label>Count In Stock</Form.Label>
+                <Form.Control
+                    type="number"
+                    value={countInStock}
+                    onChange={(e) => setCountInStock(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="description">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+              </Form.Group>
+              <div className="mb-3">
+                <Button
+                    disabled={loadingUpdate}
+                    variant="outline-primary"
               type="submit"
             >
               Save

@@ -131,7 +131,7 @@ export default function ProductListScreen() {
         });
         toast.success(`${type} created successfully`);
         dispatch({ type: 'CREATE_SUCCESS' });
-        navigate(`/admin/${type}/${data[type]._id}`);
+        navigate(`/admin/edit/${type}/${data[type]._id}`);
       } catch (err) {
         toast.error(getError(err));
         dispatch({
@@ -217,7 +217,7 @@ export default function ProductListScreen() {
                         <Button
                             type="button"
                             variant="success"
-                            onClick={() => navigate(`/admin/product/${product._id}`)}
+                            onClick={() => navigate(`/admin/edit/product/${product._id}`)}
                         >
                           <i className="fas fa-edit"></i>
                         </Button>
@@ -243,7 +243,7 @@ export default function ProductListScreen() {
                         <Button
                             type="button"
                             variant="success"
-                            onClick={() => navigate(`/admin/flower/${flower._id}`)}
+                            onClick={() => navigate(`/admin/edit/flower/${flower._id}`)}
                         >
                           <i className="fas fa-edit"></i>
                         </Button>
@@ -269,7 +269,7 @@ export default function ProductListScreen() {
                         <Button
                             type="button"
                             variant="success"
-                            onClick={() => navigate(`/admin/packing/${packing._id}`)}
+                            onClick={() => navigate(`/admin/edit/packing/${packing._id}`)}
                         >
                           <i className="fas fa-edit"></i>
                         </Button>
