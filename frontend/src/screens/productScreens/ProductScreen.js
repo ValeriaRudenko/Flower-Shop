@@ -26,7 +26,7 @@ export default function ProductScreen() {
 
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
-    const [selectedImage, setSelectedImage] = useState('');
+    const [selectedImage] = useState('');
 
     const navigate = useNavigate();
     const params = useParams();

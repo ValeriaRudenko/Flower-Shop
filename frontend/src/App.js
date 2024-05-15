@@ -51,7 +51,7 @@ function App() {
         // Redirecting to signin page
         window.location.href = "/signin";
     };
-    const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
+    const [sidebarIsOpen] = useState(false);
 
 
 // Rendering the app with routing and components

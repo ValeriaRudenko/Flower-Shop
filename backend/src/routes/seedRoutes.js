@@ -90,9 +90,6 @@ seedRouter.get('/', async (req, res) => {
 // Remove existing packages
         await Order.deleteMany({});
 
-        // Insert new flowers
-        const createdOrders = await Order.insertMany(data.orders);
-
         // Remove existing users
         await User.deleteMany({});
 

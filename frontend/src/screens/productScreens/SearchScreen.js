@@ -1,6 +1,6 @@
 // Importing necessary modules from React and related packages
 import React, {useEffect, useReducer} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import axios from 'axios';
 import {getError} from '../utils';
 import {Helmet} from 'react-helmet-async';
@@ -78,8 +78,6 @@ const reducer = (state, action) => {
 
 // Main component function for search screen
 export default function SearchScreen() {
-    // Hooks to manage navigation and location
-    const navigate = useNavigate();
     const {search} = useLocation();
     const sp = new URLSearchParams(search);
     const query = sp.get('query') || 'all';
@@ -89,7 +87,7 @@ export default function SearchScreen() {
     const page = sp.get('page') || 1;
 
     // Reducer hook to manage state
-    const [{loading, error, products, flowers, packings, pages, countProducts}, dispatch] =
+    const [{loading, error, products, flowers, packings, pages}, dispatch] =
         useReducer(reducer, {
             loading: true,
             error: '',
