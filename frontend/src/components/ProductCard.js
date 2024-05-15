@@ -28,13 +28,13 @@ class ProductCard extends Component {
 
     ctxDispatch({
       type: 'CART_ADD_ITEM',
-      payload: { ...item, quantity },
+      payload: { ...item, quantity, type },
     });
   };
 
   render() {
     const { item } = this.props;
-    const { type } = this.props.type;
+    const { type } = this.props;
     return (
         <Card>
           <Link to={`/${type}/${item.slug}`}>
@@ -56,7 +56,7 @@ class ProductCard extends Component {
               ) : (
                   <Button
                       variant="outline-primary"
-                      onClick={() => this.addToCartHandler(item)}
+                      onClick={() => this.addToCartHandler(item, type)}
                   >
                     Add to cart
                   </Button>
