@@ -36,7 +36,7 @@ export default function CreateBouquetScreen() {
     const [selectedCategory, setSelectedCategory] = useState('flowers');
     // State variables for pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(1); // Changed to display only 2 items per page
+    const [itemsPerPage] = useState(20); // Changed to display only 2 items per page
 
     // Using useEffect hook to perform side effects like fetching data from server
     useEffect(() => {
@@ -100,7 +100,7 @@ export default function CreateBouquetScreen() {
                     <h1>Items</h1>
                     <Container>
                         <Row>
-                            <Col xs={12} md={6}>
+                            <Col xs={12} md={3}>
                                 <div>
                                     <Button variant="link" onClick={() => setSelectedCategory('flowers')} style={{ textDecoration: 'none', color: ' #114232' }}>
                                         Flowers
@@ -122,7 +122,7 @@ export default function CreateBouquetScreen() {
                         <div>
                             <Row>
                                 {filteredItems().slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => (
-                                    <Col key={item.slug} sm={6} className="mb-3">
+                                    <Col key={item.slug} sm={3} className="mb-3">
                                         {selectedCategory === 'flowers' ? (
                                             <Flower flower={item} />
                                         ) : (

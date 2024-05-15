@@ -10,10 +10,17 @@ import Order from "../models/orderModel.js";
 import { faker } from '@faker-js/faker';
 
 const seedRouter = express.Router();
-const flowers = ['Rose', 'Tulip', 'Daisy', 'Sunflower', 'Orchid'];
-const colors = ['Red', 'Yellow', 'Blue', 'Pink', 'Purple'];
-const images = ['/images/p1.jpg', '/images/p2.jpg', '/images/p3.jpg', '/images/p4.jpg', '/images/p5.jpg', '/images/p6.jpg', '/images/p7.jpg', '/images/p8.jpg', '/images/p9.jpg', '/images/p10.jpg'];
+const flowers = ['Rose', 'Tulip', 'Daisy', 'Sunflower', 'Orchid', 'Peony', 'Lily'];
+const colors = ['Red', 'Yellow', 'Blue', 'Pink', 'Purple', 'White', 'Orange'];
 
+const imagesBouquets = [];
+const imagesFlowers = [];
+for (let i = 1; i <= 9; i++) {
+  const imageBouquetsPath = `/images/bouquets/bouquet${i}.jpg`;
+  const imageFlowersPath = `/images/flowers/flower${i}.jpg`;
+  imagesBouquets.push(imageBouquetsPath);
+  imagesFlowers.push(imageFlowersPath);
+}
 function getRandomFlowerWithColor() {
   const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
   const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -28,18 +35,36 @@ seedRouter.get('/', async (req, res) => {
     let products = [];
 
     for (let i = 0; i < 100; i++) {
-      const name = getRandomFlowerWithColor();
+      const name = getRandomFlowerWithColor()+' Bouquet';
       const product = {
+        name: name,
+        slug: flowerToSlug(name),
+        description: faker.lorem.words(20),
+        price: faker.number.int({ min: 10, max: 200 }),
+        countInStock: faker.number.int(50),
+        rating: faker.number.float({ min: 3, max: 5, multipleOf: 0.1 }),
+        numReviews: faker.number.int(50),
+        image: imagesBouquets[Math.floor(Math.random() * imagesBouquets.length)]
+      };
+      products.push(product);
+    }
+    let flowers = [];
+
+    for (let i = 0; i < 100; i++) {
+      const name = getRandomFlowerWithColor();
+      const flower = {
         name: name ,
         slug: flowerToSlug(name),
         description: faker.lorem.words(20),
         price: faker.number.int({ min: 10, max: 200 }),
         countInStock: faker.number.int(50),
-        rating: faker.number.float({ min: 1, max: 5, multipleOf: 0.1 }),
+        rating: faker.number.float({ min: 3, max: 5, multipleOf: 0.1 }),
         numReviews: faker.number.int(50),
-        image: images[Math.floor(Math.random() * images.length)]
+        color: faker.color.human(),
+        size: faker.lorem.words(1),
+        image: imagesFlowers[Math.floor(Math.random() * imagesFlowers.length)]
       };
-      products.push(product);
+      flowers.push(flower);
     }
 
     // Remove existing products
@@ -52,7 +77,7 @@ seedRouter.get('/', async (req, res) => {
     await Flower.deleteMany({});
 
     // Insert new flowers
-    const createdFlowers = await Flower.insertMany(data.flowers);
+    const createdFlowers = await Flower.insertMany(flowers);
 
     // Remove existing packages
     await Packing.deleteMany({});
