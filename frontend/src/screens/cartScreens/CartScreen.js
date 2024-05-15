@@ -11,6 +11,7 @@ import MessageBox from '../../components/MessageBox';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductPrice from "../../components/Price";
+import ProductImage from "../../components/ProductImage";
 
 export default function CartScreen() {
   const navigate = useNavigate();
@@ -79,8 +80,8 @@ export default function CartScreen() {
                           {groupedCartItems[groupId][0].type === 'product' ? (
                               <>
                                 <Col md={4}>
-                                  <img
-                                      src={groupedCartItems[groupId][0].image}
+                                  <ProductImage
+                                      source={groupedCartItems[groupId][0].image}
                                       alt={groupedCartItems[groupId][0].name}
                                       className="img-fluid rounded img-thumbnail"
                                   />
@@ -131,8 +132,8 @@ export default function CartScreen() {
                                 <ul>
                                   {groupedCartItems[groupId].map((item) => (
                                       <li key={item._id}>
-                                        <img
-                                            src={item.image}
+                                        <ProductImage
+                                            source={item.image}
                                             alt={item.name}
                                             className="img-fluid rounded img-thumbnail"
                                         />

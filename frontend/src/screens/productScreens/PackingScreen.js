@@ -17,6 +17,7 @@ import {Store} from '../../Store';
 import {toast} from 'react-toastify';
 import PackingPrice from "../../components/Price";
 import {reducer} from "../../components/reducers/Reducer";
+import ProductImage from "../../components/ProductImage";
 
 
 export default function PackingScreen() {
@@ -24,8 +25,6 @@ export default function PackingScreen() {
 
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
-    const [selectedImage, setSelectedImage] = useState('');
-
     const navigate = useNavigate();
     const params = useParams();
     const { slug } = params;
@@ -126,9 +125,9 @@ export default function PackingScreen() {
         <div>
             <Row>
                 <Col md={6}>
-                    <img
+                    <ProductImage
                         className="img-large"
-                        src={selectedImage || product.image}
+                        source={product.image}
                         alt={product.name}
                     />
                 </Col>
@@ -148,24 +147,7 @@ export default function PackingScreen() {
                                 price={product.price}
                             ></PackingPrice>
                         </ListGroup.Item>
-                        <ListGroup.Item>
-                            <Row xs={1} md={2} className="g-2">
-                                {[product.image, ...product.images].map((x) => (
-                                    <Col key={x}>
-                                        <Card>
-                                            <Button
-                                                className="thumbnail"
-                                                type="button"
-                                                variant="light"
-                                                onClick={() => setSelectedImage(x)}
-                                            >
-                                                <Card.Img variant="top" src={x} alt="packing" />
-                                            </Button>
-                                        </Card>
-                                    </Col>
-                                ))}
-                            </Row>
-                        </ListGroup.Item>
+
                         <ListGroup.Item>
                             Description : <p>{product.description}</p>
                         </ListGroup.Item>

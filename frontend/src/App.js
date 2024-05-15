@@ -19,7 +19,7 @@ import OrderScreen from "./screens/cartScreens/OrderScreen";
 import OrderHistoryScreen from "./screens/userScreens/OrderHistoryScreen";
 import ProfileScreen from "./screens/userScreens/ProfileScreen";
 import SearchBar from "./components/SearchBar";
-import SearchScreen from "./screens/SearchScreen";
+import SearchScreen from "./screens/productScreens/SearchScreen";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import ProductListScreen from "./screens/adminScreens/ProductListScreen";
@@ -32,7 +32,7 @@ import BouquetsScreen from "./screens/productScreens/BouquetsScreen";
 import CreateBouquetScreen from "./screens/productScreens/CreateBouquetScreen";
 import FlowerScreen from "./screens/productScreens/FlowerScreen";
 import PackingScreen from "./screens/productScreens/PackingScreen";
-import PackingEditScreen from "./screens/PackingEditScreen";
+import PackingEditScreen from "./screens/adminScreens/PackingEditScreen";
 
 function App() {
     // Accessing global state and dispatch function from Store context

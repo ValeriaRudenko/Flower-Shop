@@ -3,18 +3,18 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getError } from './utils';
+import { getError } from '../utils';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Rating from '../components/Rating';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
+import Rating from '../../components/Rating';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
 import Button from 'react-bootstrap/Button';
 import LinkContainer from 'react-router-bootstrap/LinkContainer';
-import Product from '../components/Product';
-import Flower from "../components/Flower";
-import Packing from "../components/Packing";
+import Product from '../../components/Product';
+import Flower from "../../components/Flower";
+import Packing from "../../components/Packing";
 
 // Reducer function to manage state
 const reducer = (state, action) => {

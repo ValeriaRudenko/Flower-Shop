@@ -13,7 +13,8 @@ import { toast } from 'react-toastify'; // Import toast notification from react-
 import { getError } from '../utils'; // Import custom utility function getError
 import LoadingBox from '../../components/LoadingBox'; // Import custom LoadingBox component
 import Axios from 'axios'; // Import Axios for HTTP requests
-import ProductPrice from "../../components/Price"; // Import custom ProductPrice component
+import ProductPrice from "../../components/Price";
+import ProductImage from "../../components/ProductImage"; // Import custom ProductPrice component
 
 // Define reducer function to manage loading state
 const reducer = (state, action) => {
@@ -148,11 +149,11 @@ export default function PlaceOrderScreen() {
                           {groupedCartItems[groupId][0].type === 'product' ? (
                               <>
                                 <Col md={6}>
-                                  <img
-                                      src={groupedCartItems[groupId][0].image}
+                                  <ProductImage
+                                      source={groupedCartItems[groupId][0].image}
                                       alt={groupedCartItems[groupId][0].name}
                                       className="img-fluid rounded img-thumbnail"
-                                  ></img>{' '}
+                                  ></ProductImage >{' '}
                                   <Link
                                       to={`/product/${groupedCartItems[groupId][0].slug}`}
                                   >
@@ -177,8 +178,8 @@ export default function PlaceOrderScreen() {
                                   {/* Iterate over items in bouquet and display */}
                                   {groupedCartItems[groupId].map((item) => (
                                       <li key={item._id}>
-                                        <img
-                                            src={item.image}
+                                        <ProductImage
+                                            source={item.image}
                                             alt={item.name}
                                             className="img-fluid rounded img-thumbnail"
                                         />

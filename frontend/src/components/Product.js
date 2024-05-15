@@ -7,6 +7,7 @@ import React, { useContext } from 'react';
 import { Store } from '../Store';
 import ProductPrice from "./Price";
 import Flower from "./Flower";
+import ProductImage from "./ProductImage";
 
 export default function Product(props) {
   const { product } = props;
@@ -46,7 +47,7 @@ export default function Product(props) {
   return (
       <Card>
         <Link to={`/product/${product.slug}`}>
-          <img src={product.image} className="card-img-top"  alt={product.name} />
+          <ProductImage  source={product.image} className="card-img-top"  alt={product.name} />
         </Link>
         <Card.Body>
           <Link to={`/product/${product.slug}`}>

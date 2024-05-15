@@ -20,7 +20,7 @@ const data = {
     {
       name: 'Tulips bouquet',
       slug: 'tulips-bouquet',
-      image: '/images/p1.jpg', // 679px × 829px
+      image: '/images/p1.jpg',
       price: 120,
       countInStock: 0,
 

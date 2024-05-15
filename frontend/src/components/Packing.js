@@ -6,6 +6,7 @@ import axios from 'axios';
 import React, { useContext } from 'react';
 import { Store } from '../Store';
 import ProductPrice from "./Price";
+import ProductImage from "./ProductImage";
 
 
 export default function Packing(props) {
@@ -48,7 +49,7 @@ console.log(packing.name)
     return (
         <Card>
             <Link to={`/packings/${packing.slug}`}>
-                <img src={packing.image} className="card-img-top"  alt={packing.name} />
+                <ProductImage source={packing.image} className="card-img-top"  alt={packing.name} />
             </Link>
             <Card.Body>
                 <Link to={`/packing/${packing.slug}`}>

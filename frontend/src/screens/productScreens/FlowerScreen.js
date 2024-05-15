@@ -17,6 +17,7 @@ import {Store} from '../../Store';
 import {toast} from 'react-toastify';
 import FlowerPrice from "../../components/Price";
 import {reducer} from "../../components/reducers/Reducer";
+import ProductImage from "../../components/ProductImage";
 
 
 export default function FlowerScreen() {
@@ -24,7 +25,6 @@ export default function FlowerScreen() {
 
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
-    const [selectedImage, setSelectedImage] = useState('');
 
     const navigate = useNavigate();
     const params = useParams();
@@ -126,9 +126,9 @@ export default function FlowerScreen() {
         <div>
             <Row>
                 <Col md={6}>
-                    <img
+                    <ProductImage
                         className="img-large"
-                        src={selectedImage || product.image}
+                        source={product.image}
                         alt={product.name}
                     />
                 </Col>
@@ -147,24 +147,6 @@ export default function FlowerScreen() {
                             <FlowerPrice
                                 price={product.price}
                             ></FlowerPrice>
-                        </ListGroup.Item>
-                        <ListGroup.Item>
-                            <Row xs={1} md={2} className="g-2">
-                                {[product.image, ...product.images].map((x) => (
-                                    <Col key={x}>
-                                        <Card>
-                                            <Button
-                                                className="thumbnail"
-                                                type="button"
-                                                variant="light"
-                                                onClick={() => setSelectedImage(x)}
-                                            >
-                                                <Card.Img variant="top" src={x} alt="flower" />
-                                            </Button>
-                                        </Card>
-                                    </Col>
-                                ))}
-                            </Row>
                         </ListGroup.Item>
                         <ListGroup.Item>
                             Description : <p>{product.description}</p>

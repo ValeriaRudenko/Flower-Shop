@@ -14,6 +14,7 @@ import { Store } from '../../Store';
 import { getError } from '../utils';
 import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
+import ProductImage from "../../components/ProductImage";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -137,6 +138,7 @@ export default function OrderScreen() {
       (order._id && order._id !== orderId)
     ) {
       fetchOrder();
+
       if (successPay) {
         dispatch({ type: 'PAY_RESET' });
       }
@@ -152,7 +154,7 @@ export default function OrderScreen() {
           type: 'resetOptions',
           value: {
             'client-id': clientId,
-            currency: 'USD',
+            currency: 'EUR',
           },
         });
         paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
@@ -201,7 +203,10 @@ export default function OrderScreen() {
         <Col md={8}>
           <Card className="mb-3">
             <Card.Body>
-              <Card.Title>Shipping</Card.Title>
+              <Card.Title>
+                {(order.isPaid || order.paymentMethod === 'Cash') ? 'Shipping' : (order.isDelivered ? 'Delivered' : 'Waiting for payment')}
+              </Card.Title>
+
               <Card.Text>
                 <strong>Name:</strong> {order.shippingAddress.fullName} <br />
                 <strong>Address: </strong> {order.shippingAddress.address},
@@ -234,11 +239,11 @@ export default function OrderScreen() {
                   <ListGroup.Item key={item._id}>
                     <Row className="align-items-center">
                       <Col md={6}>
-                        <img
-                          src={item.image}
+                        <ProductImage
+                            source={item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
-                        ></img>{' '}
+                        ></ProductImage>{' '}
                         <Link to={`/product/${item.slug}`}>{item.name}</Link>
                       </Col>
                       <Col md={3}>
@@ -282,7 +287,7 @@ export default function OrderScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-                {!order.isPaid && (
+                {!order.isPaid && order.paymentMethod !=='Cash' &&(
                   <ListGroup.Item>
                     {isPending ? (
                       <LoadingBox />

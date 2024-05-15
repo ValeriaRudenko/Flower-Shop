@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Store } from '../Store';
-import { getError } from './utils';
+import { Store } from '../../Store';
+import { getError } from '../utils';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 

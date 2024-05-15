@@ -6,6 +6,7 @@ import axios from 'axios';
 import React, { useContext } from 'react';
 import { Store } from '../Store';
 import ProductPrice from "./Price";
+import ProductImage from "./ProductImage";
 
 export default function Flower(props) {
     const { flower } = props;
@@ -46,7 +47,7 @@ console.log(flower.name)
     return (
         <Card>
             <Link to={`/flower/${flower.slug}`}>
-                <img src={flower.image} className="card-img-top"  alt={flower.name} />
+                <ProductImage  source={flower.image} className="card-img-top"  alt={flower.name} />
             </Link>
             <Card.Body>
                 <Link to={`/flower/${flower.slug}`}>
