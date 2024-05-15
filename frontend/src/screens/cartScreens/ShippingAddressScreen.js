@@ -1,31 +1,25 @@
-// Import necessary components and libraries
 import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { Store } from '../Store';
+import { Store } from '../../Store';
 import { useNavigate } from 'react-router-dom';
-import CheckoutSteps from '../components/CheckoutSteps';
+import CheckoutSteps from '../../components/CheckoutSteps';
 
-// Define functional component for Payment and Shipping screen
-export default function PaymentAndShippingScreen() {
-  // Initialize navigate function to navigate between routes
+export default function ShippingAddressScreen() {
   const navigate = useNavigate();
-  // Retrieve state and dispatch function from global store context
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  // Destructure necessary state variables from the global state
   const {
     fullBox,
     userInfo,
     cart: { shippingAddress },
   } = state;
 
-  // Initialize local state variables to manage form inputs
   const [fullName, setFullName] = useState(shippingAddress.fullName || '');
   const [address, setAddress] = useState(shippingAddress.address || '');
   const [city, setCity] = useState(shippingAddress.city || '');
+  const [paymentMethod, setPaymentMethod] = useState('PayPal'); // State for payment method
 
-  // Effect hook to handle redirection if user info or shipping address is missing
   useEffect(() => {
     if (!userInfo) {
       navigate('/signin?redirect=/shipping');
@@ -35,9 +29,8 @@ export default function PaymentAndShippingScreen() {
     }
   }, [userInfo, shippingAddress, navigate]);
 
-  // Function to handle form submission
   const submitHandler = (e) => {
-    // Dispatch action to save shipping address to global state
+    e.preventDefault(); // Prevent the default form submission behavior
     ctxDispatch({
       type: 'SAVE_SHIPPING_ADDRESS',
       payload: {
@@ -47,7 +40,8 @@ export default function PaymentAndShippingScreen() {
         location: shippingAddress.location,
       },
     });
-    // Store shipping address in local storage
+    ctxDispatch({ type: 'SAVE_PAYMENT_METHOD', payload: paymentMethod });
+
     localStorage.setItem(
         'shippingAddress',
         JSON.stringify({
@@ -57,30 +51,24 @@ export default function PaymentAndShippingScreen() {
           location: shippingAddress.location,
         })
     );
-    // Navigate to the place order screen
+    localStorage.setItem('paymentMethod', paymentMethod);
+
     navigate('/placeorder');
   };
 
-  // Effect hook to set full box off when component mounts or fullBox changes
   useEffect(() => {
     ctxDispatch({ type: 'SET_FULLBOX_OFF' });
   }, [ctxDispatch, fullBox]);
 
-  // Render JSX elements
   return (
       <div>
-        {/* Helmet for setting the page title */}
         <Helmet>
           <title>Shipping Address</title>
         </Helmet>
-        {/* Component for displaying checkout steps */}
         <CheckoutSteps step1 step2></CheckoutSteps>
         <div className="container small-container">
-          {/* Heading for the shipping address section */}
           <h1 className="my-3">Shipping Address</h1>
-          {/* Form for entering shipping address */}
           <Form onSubmit={submitHandler}>
-            {/* Form group for full name input */}
             <Form.Group className="mb-3" controlId="fullName">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
@@ -89,7 +77,6 @@ export default function PaymentAndShippingScreen() {
                   required
               />
             </Form.Group>
-            {/* Form group for address input */}
             <Form.Group className="mb-3" controlId="address">
               <Form.Label>Address</Form.Label>
               <Form.Control
@@ -98,7 +85,6 @@ export default function PaymentAndShippingScreen() {
                   required
               />
             </Form.Group>
-            {/* Form group for city input */}
             <Form.Group className="mb-3" controlId="city">
               <Form.Label>City</Form.Label>
               <Form.Control
@@ -107,7 +93,32 @@ export default function PaymentAndShippingScreen() {
                   required
               />
             </Form.Group>
-            {/* Button to submit the form */}
+
+            {/* Form group for payment method selection */}
+            <Form.Group className="mb-3" controlId="paymentMethod">
+              <Form.Label>Payment Method</Form.Label>
+              <div>
+                <Form.Check
+                    type="radio"
+                    id="PayPal"
+                    label="PayPal"
+                    value="PayPal"
+                    checked={paymentMethod === 'PayPal'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    required
+                />
+                <Form.Check
+                    type="radio"
+                    id="Cash"
+                    label="Cash"
+                    value="Cash"
+                    checked={paymentMethod === 'Cash'}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    required
+                />
+              </div>
+            </Form.Group>
+
             <div className="mb-3">
               <Button variant="outline-primary" type="submit">
                 Continue

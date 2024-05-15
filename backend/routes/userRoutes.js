@@ -89,6 +89,7 @@ userRouter.delete(
 
 userRouter.put(
   '/profile/:id',
+
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);

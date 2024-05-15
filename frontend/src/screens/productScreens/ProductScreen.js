@@ -15,16 +15,16 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Rating from '../components/Rating';
+import Rating from '../../components/Rating';
 import { Helmet } from 'react-helmet-async';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import { getError } from './utils';
-import { Store } from '../Store';
+import LoadingBox from '../../components/LoadingBox';
+import MessageBox from '../../components/MessageBox';
+import { getError } from '../utils';
+import { Store } from '../../Store';
 import { toast } from 'react-toastify';
-import ProductPrice from "../components/Price";
+import ProductPrice from "../../components/Price";
 
-import {reducer} from "../components/reducers/Reducer";
+import {reducer} from "../../components/reducers/Reducer";
 
 
 export default function ProductScreen() {

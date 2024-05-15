@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Store } from '../Store';
+import { Store } from '../../Store';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,10 +7,10 @@ import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 import Card from 'react-bootstrap/esm/Card';
-import MessageBox from '../components/MessageBox';
+import MessageBox from '../../components/MessageBox';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ProductPrice from "../components/Price";
+import ProductPrice from "../../components/Price";
 
 export default function CartScreen() {
   const navigate = useNavigate();

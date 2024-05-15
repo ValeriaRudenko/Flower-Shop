@@ -1,6 +1,5 @@
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import HomeScreen from "./screens/HomeScreen";
-import ProductScreen from "./screens/ProductScreen";
+import ProductScreen from "./screens/productScreens/ProductScreen";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
@@ -9,19 +8,16 @@ import Badge from "react-bootstrap/Badge";
 import Nav from "react-bootstrap/Nav";
 import { useContext, useEffect, useState } from "react";
 import { Store } from "./Store";
-import CartScreen from "./screens/CartScreen";
+import CartScreen from "./screens/cartScreens/CartScreen";
 import SignInScreen from "./screens/userScreens/SignInScreen";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ShippingAddressScreen from "./screens/ShippingAddressScreen";
+import ShippingAddressScreen from "./screens/cartScreens/ShippingAddressScreen";
 import SignUpScreen from "./screens/userScreens/SignUpScreen";
-import PlaceOrderScreen from "./screens/PlaceOrderScreen";
-import OrderScreen from "./screens/OrderScreen";
+import PlaceOrderScreen from "./screens/cartScreens/PlaceOrderScreen";
+import OrderScreen from "./screens/cartScreens/OrderScreen";
 import OrderHistoryScreen from "./screens/userScreens/OrderHistoryScreen";
 import ProfileScreen from "./screens/userScreens/ProfileScreen";
-import Button from "react-bootstrap/Button";
-import { getError } from "./screens/utils";
-import axios from "axios";
 import SearchBar from "./components/SearchBar";
 import SearchScreen from "./screens/SearchScreen";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -30,12 +26,12 @@ import ProductListScreen from "./screens/adminScreens/ProductListScreen";
 import ProductEditScreen from "./screens/adminScreens/ProductEditScreen";
 import FlowerEditScreen from "./screens/adminScreens/FlowerEditScreen";
 import OrderListScreen from "./screens/adminScreens/OrderListScreen";
-import UserListScreen from "./screens/UserListScreen";
-import UserEditScreen from "./screens/UserEditScreen";
-import BouquetsScreen from "./BouquetsScreen";
-import CreateBouquetScreen from "./screens/flowerScreens/CreateBouquetScreen";
-import FlowerScreen from "./screens/flowerScreens/FlowerScreen";
-import PackingScreen from "./screens/PackingScreen";
+import UserListScreen from "./screens/adminScreens/UserListScreen";
+import UserEditScreen from "./screens/adminScreens/UserEditScreen";
+import BouquetsScreen from "./screens/productScreens/BouquetsScreen";
+import CreateBouquetScreen from "./screens/productScreens/CreateBouquetScreen";
+import FlowerScreen from "./screens/productScreens/FlowerScreen";
+import PackingScreen from "./screens/productScreens/PackingScreen";
 import PackingEditScreen from "./screens/PackingEditScreen";
 
 function App() {
@@ -80,7 +76,7 @@ function App() {
                     variant="dark" expand="lg">
               <Container>
 
-                <LinkContainer to="/bouquets">
+                <LinkContainer to="/">
                   <Navbar.Brand>FlowerShop</Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
@@ -98,7 +94,7 @@ function App() {
                     <Link to="/createbouquet" className="nav-link">
                       Create bouquet
                     </Link>
-                    <Link to="/bouquets" className="nav-link">
+                    <Link to="/" className="nav-link">
                       Bouquets
                     </Link>
                     {userInfo ? (
@@ -153,7 +149,6 @@ function App() {
                 <Route path="/cart" element={<CartScreen/>}/>
                 <Route path="/signin" element={<SignInScreen/>}/>
                 <Route path="/signup" element={<SignUpScreen/>}/>
-                <Route path="/bouquets" element={<BouquetsScreen/>}/>
                 <Route path="/createbouquet" element={<CreateBouquetScreen/>}/>
                 <Route
                     path="/profile"

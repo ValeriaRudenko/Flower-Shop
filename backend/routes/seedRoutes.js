@@ -5,6 +5,7 @@ import data from '../data.js';
 import User from '../models/userModel.js';
 import {Flower} from "../models/flowerModel.js";
 import Packing from '../models/packingModel.js';
+import Order from "../models/orderModel.js";
 
 const seedRouter = express.Router();
 
@@ -27,7 +28,11 @@ seedRouter.get('/', async (req, res) => {
 
     // Insert new flowers
     const createdPackings = await Packing.insertMany(data.packings);
+// Remove existing packages
+    await Order.deleteMany({});
 
+    // Insert new flowers
+    const createdOrders = await Order.insertMany(data.orders);
 
     // Remove existing users
     await User.deleteMany({});

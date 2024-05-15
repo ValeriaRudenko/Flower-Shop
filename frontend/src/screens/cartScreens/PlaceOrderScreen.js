@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useReducer } from 'react'; // Import React and necessary hooks
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
-import { Store } from '../Store'; // Import Store context
+import { Store } from '../../Store'; // Import Store context
 import Row from 'react-bootstrap/Row'; // Import Row component from react-bootstrap
 import Col from 'react-bootstrap/Col'; // Import Col component from react-bootstrap
 import Card from 'react-bootstrap/Card'; // Import Card component from react-bootstrap
 import Button from 'react-bootstrap/Button'; // Import Button component from react-bootstrap
 import ListGroup from 'react-bootstrap/ListGroup'; // Import ListGroup component from react-bootstrap
-import CheckoutSteps from '../components/CheckoutSteps'; // Import custom CheckoutSteps component
+import CheckoutSteps from '../../components/CheckoutSteps'; // Import custom CheckoutSteps component
 import { Helmet } from 'react-helmet-async'; // Import Helmet component from react-helmet-async
 import { Link } from 'react-router-dom'; // Import Link component from react-router-dom
 import { toast } from 'react-toastify'; // Import toast notification from react-toastify
-import { getError } from './utils'; // Import custom utility function getError
-import LoadingBox from '../components/LoadingBox'; // Import custom LoadingBox component
+import { getError } from '../utils'; // Import custom utility function getError
+import LoadingBox from '../../components/LoadingBox'; // Import custom LoadingBox component
 import Axios from 'axios'; // Import Axios for HTTP requests
-import ProductPrice from "../components/Price"; // Import custom ProductPrice component
+import ProductPrice from "../../components/Price"; // Import custom ProductPrice component
 
 // Define reducer function to manage loading state
 const reducer = (state, action) => {
@@ -51,31 +51,39 @@ export default function PlaceOrderScreen() {
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice;
 
   // Function to handle placing an order
+  // Function to handle placing an order
   const placeOrderHandler = async () => {
     try {
       dispatch({ type: 'CREATE_REQUEST' }); // Dispatch action to set loading state
+      const paymentMethod = localStorage.getItem('paymentMethod') || 'PayPal';
 
-      // Send POST request to create order
-      const { data } = await Axios.post(
-          '/api/orders',
-          {
-            orderItems: cart.cartItems,
-            shippingAddress: cart.shippingAddress,
-            paymentMethod: 'PayPal', // Set payment method to PayPal
-            itemsPrice: cart.itemsPrice,
-            shippingPrice: cart.shippingPrice,
-            totalPrice: cart.totalPrice,
-          },
-          {
-            headers: {
-              authorization: `Bearer ${userInfo.token}`,
+
+        // Directly create order for cash payment
+        const { data } = await Axios.post(
+            '/api/orders',
+            {
+              orderItems: cart.cartItems,
+              shippingAddress: cart.shippingAddress,
+              paymentMethod,
+              itemsPrice: cart.itemsPrice,
+              shippingPrice: cart.shippingPrice,
+              totalPrice: cart.totalPrice,
             },
-          }
-      );
-      ctxDispatch({ type: 'CART_CLEAR' }); // Clear cart in global state
-      dispatch({ type: 'CREATE_SUCCESS' }); // Dispatch action to indicate success
-      localStorage.removeItem('cartItems'); // Remove cart items from local storage
-      navigate(`/order/${data.order._id}`); // Navigate to order confirmation page
+            {
+              headers: {
+                authorization: `Bearer ${userInfo.token}`,
+              },
+            }
+        );
+        ctxDispatch({ type: 'CART_CLEAR' }); // Clear cart in global state
+        dispatch({ type: 'CREATE_SUCCESS' }); // Dispatch action to indicate success
+        localStorage.removeItem('cartItems'); // Remove cart items from local storage
+        localStorage.removeItem('paymentMethod'); // Remove payment method from local storage
+      if (paymentMethod === 'Cash') {
+        navigate(`/orderhistory`); // Navigate to order confirmation page
+      } else {
+        navigate(`/order/${data.order._id}`);
+      }
     } catch (err) {
       dispatch({ type: 'CREATE_FAIL' }); // Dispatch action to indicate failure
       toast.error(getError(err)); // Show error message using toast notification
