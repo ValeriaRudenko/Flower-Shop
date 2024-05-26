@@ -71,7 +71,7 @@ export default function CartScreen() {
     }, {});
 
     const storedBouquetNumber = localStorage.getItem('bouquetNumber');
-    if (storedBouquetNumber && !groupedCartItems[storedBouquetNumber]) {
+    if (storedBouquetNumber>1 && !groupedCartItems[storedBouquetNumber]) {
         groupedCartItems[storedBouquetNumber] = [];
     }
 
@@ -92,7 +92,7 @@ export default function CartScreen() {
                             {Object.keys(groupedCartItems).map((groupId) => (
                                 <ListGroupItem key={groupId}>
                                     <Row className="align-items-center">
-                                        {groupedCartItems[groupId][0]?.bouquetNumber || groupId === storedBouquetNumber ? (
+                                        {groupedCartItems[groupId][0]?.bouquetNumber || (storedBouquetNumber>1 && groupId === storedBouquetNumber) ? (
                                             <Col>
                                                 <h5>Bouquet {groupedCartItems[groupId][0]?.bouquetNumber || storedBouquetNumber}</h5>
                                                 <Button
