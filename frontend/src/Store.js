@@ -36,9 +36,9 @@ function reducer(state, action) {
         case 'CART_REMOVE_BOUQUET':
             const storedBouquetNumber = localStorage.getItem('bouquetNumber');
             const updatedCartItems = state.cart.cartItems.filter(
-                (item) => item.bouquetNumber !== action.payload
+                (item) => item.bouquetNumber !== Number(action.payload)
             );
-            if(action.payload === storedBouquetNumber){
+            if(action.payload === storedBouquetNumber && storedBouquetNumber>1){
                 localStorage.setItem('bouquetNumber', Number(action.payload)-1);
             }
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
@@ -51,31 +51,32 @@ function reducer(state, action) {
             };
         case 'CART_ADD_ITEM':
             const newItem = action.payload;
-            const itemExist = state.cart.cartItems.find(
-                (item) => item._id === newItem._id
-            );
 
+            // Set bouquetNumber if the item is not a product
             if (newItem.type !== "product") {
-                if (!itemExist) {
-                    newItem.bouquetNumber = Number(localStorage.getItem('bouquetNumber')) || 1;
-                } else {
-                    newItem.bouquetNumber = itemExist.bouquetNumber; // Changed from item to itemExist
-                }
+                newItem.bouquetNumber = action.payload.bouquetNumber || Number(localStorage.getItem('bouquetNumber')) || 1;
             }
 
+            // Find existing item by ID and bouquetNumber (if applicable)
+            let itemExist = state.cart.cartItems.find(
+                (item) => item._id === newItem._id && (newItem.type === "product" || item.bouquetNumber === newItem.bouquetNumber)
+            );
+
+            // Update or add item in the cart
             const cartItems = itemExist
                 ? state.cart.cartItems.map((item) =>
-                    item._id === itemExist._id ? newItem : item
+                    item._id === itemExist._id && (newItem.type === "product" || item.bouquetNumber === newItem.bouquetNumber) ? newItem : item
                 )
                 : [...state.cart.cartItems, newItem];
 
+            // Save updated cart items to local storage
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
             return { ...state, cart: { ...state.cart, cartItems } };
 
-        // Remove an item from the cart.
         case 'CART_REMOVE_ITEM':
             const cartItemsRemoved = state.cart.cartItems.filter(
-                (item) => item._id !== action.payload._id
+                (item) => !(item._id === action.payload._id && (action.payload.type === "product" || item.bouquetNumber === action.payload.bouquetNumber))
             );
             localStorage.setItem('cartItems', JSON.stringify(cartItemsRemoved));
             return {...state, cart: {...state.cart, cartItems: cartItemsRemoved}};

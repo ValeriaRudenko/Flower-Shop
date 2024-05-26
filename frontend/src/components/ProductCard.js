@@ -16,8 +16,14 @@ class ProductCard extends Component {
         const {
             cart: {cartItems},
         } = state;
+        let itemExist;
 
-        const itemExist = cartItems.find((x) => x._id === item._id);
+        if (type === "product") {
+            itemExist = cartItems.find((x) => x._id === item._id);
+        } else {
+            const bouquetNumber = localStorage.getItem('bouquetNumber');
+            itemExist = cartItems.find((x) => x._id === item._id && x.bouquetNumber === bouquetNumber);
+        }
         const quantity = itemExist ? itemExist.quantity + 1 : 1;
         const {data} = await axios.get(`/api/${type}s/${item._id}`);
 
