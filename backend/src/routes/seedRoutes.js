@@ -59,7 +59,7 @@ seedRouter.get('/', async (req, res) => {
                 name: name,
                 slug: flowerToSlug(name),
                 description: faker.lorem.words(20),
-                price: faker.number.int({min: 10, max: 200}),
+                price: faker.number.int({min: 1, max: 20}),
                 countInStock: faker.number.int(50),
                 rating: faker.number.float({min: 3, max: 5, multipleOf: 0.1}),
                 numReviews: faker.number.int(50),

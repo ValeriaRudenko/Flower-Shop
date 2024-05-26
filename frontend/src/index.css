@@ -59,7 +59,10 @@ a, my-3, h1 {
 }
 
 .img-thumbnail {
-    height: 80px;
+    height: 100px;
+    width: 100px;
+    object-fit: cover; /* or any other value you prefer */
+    overflow: hidden;
 }
 
 .small-container {

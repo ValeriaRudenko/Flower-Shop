@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
-import {Store} from '../../Store';
-import {Helmet} from 'react-helmet-async';
+import React, { useContext } from 'react';
+import { Store } from '../../Store';
+import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -8,18 +8,19 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 import Card from 'react-bootstrap/esm/Card';
 import MessageBox from '../../components/MessageBox';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProductPrice from "../../components/Price";
 import ProductImage from "../../components/ProductImage";
 
 export default function CartScreen() {
     const navigate = useNavigate();
-    const {state, dispatch: ctxDispatch} = useContext(Store);
-    const {cart: {cartItems}} = state;
+    const { state, dispatch: ctxDispatch } = useContext(Store);
+    const { cart: { cartItems } } = state;
 
     const updateCartHandler = async (item, quantity) => {
         const type = item.type;
+        const bouquetNumber = item.bouquetNumber;
         let endpoint;
         if (type === 'flower') {
             endpoint = `/api/flowers/${item._id}`;
@@ -28,37 +29,51 @@ export default function CartScreen() {
         } else {
             endpoint = `/api/products/${item._id}`;
         }
-        const {data} = await axios.get(endpoint);
+        const { data } = await axios.get(endpoint);
         if (data.countInStock < quantity) {
             window.alert('Sorry. Product is out of stock');
             return;
         }
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: {...item, quantity, type},
+            payload: { ...item, quantity, type, bouquetNumber },
         });
     };
 
     const removeItemHandler = (item) => {
-        ctxDispatch({type: 'CART_REMOVE_ITEM', payload: item});
+        ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+    };
+
+    const removeBouquetHandler = (bouquetNumber) => {
+        ctxDispatch({ type: 'CART_REMOVE_BOUQUET', payload: bouquetNumber });
     };
 
     const checkoutHandler = () => {
         navigate('/signin?redirect=/shipping');
     };
 
-    // Group cart items by bouquetId
+    const addNewBouquetHandler = () => {
+        ctxDispatch({
+            type: 'ADD_NEW_BOUQUET',
+        });
+    };
+
     const groupedCartItems = cartItems.reduce((acc, item) => {
-        if (item.type === 'product') {
-            acc[item._id] = [item];
-        } else {
-            if (!acc[item.bouquetId]) {
-                acc[item.bouquetId] = [];
+        if (item.bouquetNumber) {
+            if (!acc[item.bouquetNumber]) {
+                acc[item.bouquetNumber] = [];
             }
-            acc[item.bouquetId].push(item);
+            acc[item.bouquetNumber].push(item);
+        } else {
+            acc[item._id] = [item];
         }
         return acc;
     }, {});
+
+    const storedBouquetNumber = localStorage.getItem('bouquetNumber');
+    if (storedBouquetNumber && !groupedCartItems[storedBouquetNumber]) {
+        groupedCartItems[storedBouquetNumber] = [];
+    }
 
     return (
         <div>
@@ -74,62 +89,18 @@ export default function CartScreen() {
                         </MessageBox>
                     ) : (
                         <ListGroup>
-                            {Object.keys(groupedCartItems).map((groupId, index) => (
+                            {Object.keys(groupedCartItems).map((groupId) => (
                                 <ListGroupItem key={groupId}>
                                     <Row className="align-items-center">
-                                        {groupedCartItems[groupId][0].type === 'product' ? (
-                                            <>
-                                                <Col md={4}>
-                                                    <ProductImage
-                                                        source={groupedCartItems[groupId][0].image}
-                                                        alt={groupedCartItems[groupId][0].name}
-                                                        className="img-fluid rounded img-thumbnail"
-                                                    />
-                                                </Col>
-                                                <Col md={4}>
-                                                    <Link
-                                                        to={`/product/${groupedCartItems[groupId][0].slug}`}> {groupedCartItems[groupId][0].name}</Link>
-                                                </Col>
-                                                <Col md={3}>
-                                                    <Button
-                                                        variant="light"
-                                                        onClick={() =>
-                                                            updateCartHandler(groupedCartItems[groupId][0], groupedCartItems[groupId][0].quantity - 1)
-                                                        }
-                                                        disabled={groupedCartItems[groupId][0].quantity === 1}
-                                                    >
-                                                        <i className="fas fa-minus-circle"></i>
-                                                    </Button>
-                                                    {' '}
-                                                    <span>{groupedCartItems[groupId][0].quantity}</span>
-                                                    {' '}
-                                                    <Button
-                                                        variant="light"
-                                                        onClick={() =>
-                                                            updateCartHandler(groupedCartItems[groupId][0], groupedCartItems[groupId][0].quantity + 1)
-                                                        }
-                                                    >
-                                                        <i className="fas fa-plus-circle"></i>
-                                                    </Button>
-                                                    {' '}
-                                                </Col>
-                                                <Col md={3}>
-                                                    <ProductPrice
-                                                        price={groupedCartItems[groupId][0].price}
-                                                    ></ProductPrice>
-                                                </Col>
-                                                <Col md={2}>
-                                                    <Button
-                                                        variant="light"
-                                                        onClick={() => removeItemHandler(groupedCartItems[groupId][0])}
-                                                    >
-                                                        <i className="fas fa-trash"></i>
-                                                    </Button>
-                                                </Col>
-                                            </>
-                                        ) : (
+                                        {groupedCartItems[groupId][0]?.bouquetNumber || groupId === storedBouquetNumber ? (
                                             <Col>
-                                                <h5>Custom Bouquet {index + 1}</h5>
+                                                <h5>Bouquet {groupedCartItems[groupId][0]?.bouquetNumber || storedBouquetNumber}</h5>
+                                                <Button
+                                                    variant="light"
+                                                    onClick={() => removeBouquetHandler(groupId)}
+                                                >
+                                                    <i className="fas fa-trash"></i> Delete Bouquet
+                                                </Button>
                                                 <ul>
                                                     {groupedCartItems[groupId].map((item) => (
                                                         <li key={item._id}>
@@ -160,18 +131,75 @@ export default function CartScreen() {
                                                             >
                                                                 <i className="fas fa-plus-circle"></i>
                                                             </Button>
+                                                            <Button
+                                                                variant="light"
+                                                                onClick={() => removeItemHandler(item)}
+                                                            >
+                                                                <i className="fas fa-trash"></i>
+                                                            </Button>
                                                         </li>
                                                     ))}
                                                 </ul>
                                                 <h6>Total Price: <ProductPrice price={groupedCartItems[groupId]
                                                     .reduce((a, c) => a + c.price * c.quantity, 0)}/></h6>
                                             </Col>
+                                        ) : (
+                                            <>
+                                                <Col md={4}>
+                                                    <ProductImage
+                                                        source={groupedCartItems[groupId][0]?.image}
+                                                        alt={groupedCartItems[groupId][0]?.name}
+                                                        className="img-fluid rounded img-thumbnail"
+                                                    />
+                                                </Col>
+                                                <Col md={4}>
+                                                    <Link
+                                                        to={`/product/${groupedCartItems[groupId][0]?.slug}`}> {groupedCartItems[groupId][0]?.name}</Link>
+                                                </Col>
+                                                <Col md={3}>
+                                                    <Button
+                                                        variant="light"
+                                                        onClick={() =>
+                                                            updateCartHandler(groupedCartItems[groupId][0], groupedCartItems[groupId][0].quantity - 1)
+                                                        }
+                                                        disabled={groupedCartItems[groupId][0]?.quantity === 1}
+                                                    >
+                                                        <i className="fas fa-minus-circle"></i>
+                                                    </Button>
+                                                    {' '}
+                                                    <span>{groupedCartItems[groupId][0]?.quantity}</span>
+                                                    {' '}
+                                                    <Button
+                                                        variant="light"
+                                                        onClick={() =>
+                                                            updateCartHandler(groupedCartItems[groupId][0], groupedCartItems[groupId][0].quantity + 1)
+                                                        }
+                                                    >
+                                                        <i className="fas fa-plus-circle"></i>
+                                                    </Button>
+                                                    {' '}
+                                                </Col>
+                                                <Col md={3}>
+                                                    <ProductPrice
+                                                        price={groupedCartItems[groupId][0]?.price}
+                                                    ></ProductPrice>
+                                                </Col>
+                                                <Col md={2}>
+                                                    <Button
+                                                        variant="light"
+                                                        onClick={() => removeItemHandler(groupedCartItems[groupId][0])}
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </Button>
+                                                </Col>
+                                            </>
                                         )}
                                     </Row>
                                 </ListGroupItem>
                             ))}
                         </ListGroup>
                     )}
+                    <Button onClick={addNewBouquetHandler} className="mt-3">Create New Custom Bouquet</Button>
                 </Col>
                 <Col md={4}>
                     <Card>

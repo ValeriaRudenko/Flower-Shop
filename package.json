@@ -1,7 +1,7 @@
 {
-  "name": "mern-eshop",
+  "name": "flower-shop",
   "version": "1.0.0",
-  "description": "A simple react e-commerce app",
+  "description": "A simple react flower shop app",
   "main": "index.js",
   "scripts": {
     "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
@@ -10,19 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MBEDOBE/mern-eshop.git"
+    "url": "git+https://github.com/ValeriaRudenko/Flower-Shop.git"
   },
-  "keywords": [
-    "react",
-    "ecommerce",
-    "mern-stack"
-  ],
   "author": "Valeriia Rudenko",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/MBEDOBE/mern-eshop/issues"
-  },
-  "homepage": "https://github.com/MBEDOBE/mern-eshop#readme",
   "devDependencies": {
     "@faker-js/faker": "^8.4.1"
   },
