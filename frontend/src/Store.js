@@ -34,9 +34,13 @@ function reducer(state, action) {
             return {...state, fullBox: false};
         // Add an item to the cart.
         case 'CART_REMOVE_BOUQUET':
+            const storedBouquetNumber = localStorage.getItem('bouquetNumber');
             const updatedCartItems = state.cart.cartItems.filter(
                 (item) => item.bouquetNumber !== action.payload
             );
+            if(action.payload === storedBouquetNumber){
+                localStorage.setItem('bouquetNumber', Number(action.payload)-1);
+            }
             localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
             return {
                 ...state,
