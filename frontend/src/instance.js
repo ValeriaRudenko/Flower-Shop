@@ -1,6 +1,6 @@
-import axios from 'axios';
+import originalAxios from 'axios';
 
-const axios = axios.create({
+const axios = originalAxios.create({
     baseURL: 'http://127.0.0.1:5000', // Replace with your IP address or domain
 });
 
