@@ -28,7 +28,7 @@ app.use(express.urlencoded({extended: true}));
 // Get PayPal client ID
 // Отримати клієнтський ідентифікатор PayPal
 app.get("/api/keys/paypal", (req, res) => {
-    res.send(process.env.PAYPAL_CLIENT_ID || "AUqN6CU9Fb7d-Cr5lZplqXPFwCE_xCJFQmPiThF4T995zOZmmMCTAaQ1RwqHnT1USeKg4Hss89QTBzOE");
+    res.send(process.env.PAYPAL_CLIENT_ID);
 });
 
 // Routes for handling uploads
