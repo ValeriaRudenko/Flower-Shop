@@ -9,7 +9,7 @@ import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 import Card from 'react-bootstrap/esm/Card';
 import MessageBox from '../../components/MessageBox';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../instance';
 import ProductPrice from "../../components/Price";
 import ProductImage from "../../components/ProductImage";
 

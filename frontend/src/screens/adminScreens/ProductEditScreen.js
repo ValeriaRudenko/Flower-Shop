@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useReducer, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../instance';
 import {Store} from '../../Store';
 import {getError} from '../utils';
 import Container from 'react-bootstrap/Container';

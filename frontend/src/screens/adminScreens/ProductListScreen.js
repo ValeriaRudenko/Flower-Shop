@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useReducer} from 'react';
-import axios from 'axios';
+import axios from '../../instance';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {Store} from '../../Store';
 import LoadingBox from '../../components/LoadingBox';

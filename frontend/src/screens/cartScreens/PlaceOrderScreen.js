@@ -11,7 +11,7 @@ import {Helmet} from 'react-helmet-async'; // Import Helmet component from react
 import {toast} from 'react-toastify'; // Import toast notification from react-toastify
 import {getError} from '../utils'; // Import custom utility function getError
 import LoadingBox from '../../components/LoadingBox'; // Import custom LoadingBox component
-import Axios from 'axios'; // Import Axios for HTTP requests
+import axios from '../../instance';
 import ProductPrice from "../../components/Price";
 import ProductImage from "../../components/ProductImage"; // Import custom ProductPrice component
 

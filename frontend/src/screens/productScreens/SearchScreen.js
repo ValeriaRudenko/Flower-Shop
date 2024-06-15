@@ -1,7 +1,7 @@
 // Importing necessary modules from React and related packages
 import React, {useEffect, useReducer} from 'react';
 import {useLocation} from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../instance';
 import {getError} from '../utils';
 import {Helmet} from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';

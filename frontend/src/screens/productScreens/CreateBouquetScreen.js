@@ -1,5 +1,5 @@
 import React, {useEffect, useReducer, useState} from 'react';
-import axios from 'axios';
+import axios from '../../instance';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {Helmet} from 'react-helmet-async';

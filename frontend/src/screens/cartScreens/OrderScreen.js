@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../instance';
 import React, {useContext, useEffect, useReducer} from 'react';
 import {PayPalButtons, usePayPalScriptReducer} from '@paypal/react-paypal-js';
 import {Helmet} from 'react-helmet-async';

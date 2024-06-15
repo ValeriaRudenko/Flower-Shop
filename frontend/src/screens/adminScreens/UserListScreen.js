@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../instance';
 import React, {useContext, useEffect, useReducer} from 'react';
 import Button from 'react-bootstrap/Button';
 import {Helmet} from 'react-helmet-async';

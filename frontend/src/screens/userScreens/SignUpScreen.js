@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import axios from '../../instance';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -29,7 +29,7 @@ export default function SignUpScreen() {
             return;
         }
         try {
-            const {data} = await Axios.post('/api/users/signup', {
+            const {data} = await axios.post('/api/users/signup', {
                 name,
                 email,
                 password,
