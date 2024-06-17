@@ -4,7 +4,7 @@ class ProductImage extends React.Component {
 
     render() {
         const {source, alt} = this.props;
-        const backendUrl = 'http://localhost:5000'; // Backend URL
+        const backendUrl = 'http://193.219.91.103:12868'; // Backend URL
         const src = `${backendUrl}${source}`
         return (
             <img

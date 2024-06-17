@@ -59,7 +59,7 @@ export default function PlaceOrderScreen() {
 
 
             // Directly create order for cash payment
-            const {data} = await Axios.post(
+            const {data} = await axios.post(
                 '/api/orders',
                 {
                     orderItems: cart.cartItems,
